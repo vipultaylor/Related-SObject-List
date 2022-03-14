@@ -1,0 +1,99 @@
+/**
+* -------------------------------------------------------------------------------------------------+
+* Wrapper class for SObject Response Information sent to Sobject List LWC Component.
+* --------------------------------------------------------------------------------------------------
+* @author         Vipul Taylor   
+* @modifiedBy     Vipul Taylor
+* @maintainedBy   Vipul Taylor
+* @version        1.0
+* @created        2022-03-12
+* @systemLayer    Wrapper
+* --------------------------------------------------------------------------------------------------+
+*/
+public class SObjectResponseWrapper {
+    @AuraEnabled
+    public SObj sObj {get; set;}
+
+    @AuraEnabled
+    public ParentSObj parentSObj {get; set;}
+
+    @AuraEnabled
+    public Permissions permissions {get; set;}
+
+    @AuraEnabled
+    public String fieldDescribeResults {get; set;}
+
+    public SObjectResponseWrapper(){
+        this.sObj = new SObj();
+        this.parentSObj = new ParentSObj();
+        this.permissions = new Permissions();
+    }
+
+    public class SObj {
+        @AuraEnabled
+        public String sObjectLabel {get; set;}
+
+        @AuraEnabled
+        public List<SObject> lstSObjects {get; set;}
+    
+        @AuraEnabled
+        public Integer fullCountOfSObjects {get; set;}
+
+        @AuraEnabled
+        public Boolean recordtypesEnabled {get; set;}
+
+        @AuraEnabled
+        public List<RecordTypeInfo> availableRecordtypes {get; set;}
+
+        public SObj(){
+            this.lstSObjects = new List<SObject>();
+            this.fullCountOfSObjects = 0;
+            this.recordtypesEnabled = false;
+            this.availableRecordtypes = new List<RecordTypeInfo>();
+        }
+    }
+
+    public class RecordtypeInfo {
+        @AuraEnabled
+        public String recordtypeId {get; set;}
+
+        @AuraEnabled
+        public String recordtypeName {get; set;}
+
+        public RecordtypeInfo(String recordtypeId, String recordtypeName){
+            this.recordtypeId = recordtypeId;
+            this.recordtypeName = recordtypeName;
+        }
+    }
+
+    public class ParentSObj {
+        @AuraEnabled
+        public String recordId {get; set;}
+
+        @AuraEnabled
+        public String recordName {get; set;}
+
+        @AuraEnabled
+        public String name {get; set;}
+
+        @AuraEnabled
+        public String label {get; set;}
+
+        @AuraEnabled
+        public String labelPlural {get; set;}
+    }
+    
+    public class Permissions {
+        @AuraEnabled
+        public Boolean accessible {get; set;}
+
+        @AuraEnabled
+        public Boolean creatable {get; set;}
+
+        public Permissions(){
+            this.accessible = false;
+            this.creatable = false;
+        }
+    }
+
+}
