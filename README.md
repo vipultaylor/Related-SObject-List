@@ -1,18 +1,13 @@
-# Salesforce DX Project: Next Steps
+# Related List LWC Component for any SObject
 
-Now that you’ve created a Salesforce DX project, what’s next? Here are some documentation resources to get you started.
+## Features Summary
 
-## How Do You Plan to Deploy Your Changes?
+* Create a Related List component for any SObject on any "parent" Sobject satisfying different conditions previously not possible using standard related lists
+* Combine multiple related lists (from multiple relationships on a single object) into one list
+* Filter the records in the list based on Single or Multiple Recordtype(s)
+* Filter the records in the list based on custom conditions
+* Customize the New record behaviour
 
-Do you want to deploy a set of changes, or create a self-contained application? Choose a [development model](https://developer.salesforce.com/tools/vscode/en/user-guide/development-models).
+## Documentation
 
-## Configure Your Salesforce DX Project
-
-The `sfdx-project.json` file contains useful configuration information for your project. See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm) in the _Salesforce DX Developer Guide_ for details about this file.
-
-## Read All About It
-
-- [Salesforce Extensions Documentation](https://developer.salesforce.com/tools/vscode/)
-- [Salesforce CLI Setup Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
-- [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm)
-- [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm)
+The documentation on how to set up and use this component is available [here](https://github.com/vipultaylor/Related-SObject-List/wiki)
