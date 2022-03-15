@@ -17,6 +17,11 @@ public with sharing class SObjectService {
     private final static Integer MAX_LIMIT_COUNT = 10;
     private final static Integer MAX_FULLVIEW_LIMIT_COUNT = 2000;
 
+    //Create a map of objects where 'Name' is not the right identifier
+    private final static Map<String, String> mapObjectIdentifiers = new Map<String, String>{ 
+        'WorkOrder' => 'WorkOrderNumber'
+    };
+
     public static SObjectResponseWrapper getResponse(String recordId, SObjectRequestWrapper requestWrapper, Boolean viewAll){
         //Validate Wrapper
         validateWrapper(recordId, requestWrapper);
@@ -36,7 +41,14 @@ public with sharing class SObjectService {
                 For(Schema.DescribeFieldResult dfr : fieldDescribeResults){
                     //Check if the field is of type reference
                     if(dfr.type == Schema.DisplayType.REFERENCE){
-                        referenceFields.add(dfr.relationshipName + '.Name');
+                        String identifierField = 'Name';
+                        List<Schema.SObjectType> lstReferenceObjectTypes = dfr.getReferenceTo();
+                        String objName = lstReferenceObjectTypes[0].getDescribe().getName();
+                        if(mapObjectIdentifiers.containsKey(objName)){
+                            identifierField = mapObjectIdentifiers.get(objName);
+                        }
+
+                        referenceFields.add(dfr.getRelationshipName() + '.' + identifierField);
                     }
                 }
         
@@ -45,11 +57,17 @@ public with sharing class SObjectService {
                 }
 
                 Schema.DescribeSObjectResult parentSobjDescribe = ((Id) recordId).getSObjectType().getDescribe();
-                List<SObject> lstRecordDetails = Database.query('SELECT Name FROM ' + parentSobjDescribe.getName() + ' WHERE Id = \'' + recordId + '\'');
+                String parentObjName = parentSobjDescribe.getName();
+                String identifierField = 'Name';
+                if(mapObjectIdentifiers.containsKey(parentObjName)){
+                    identifierField = mapObjectIdentifiers.get(parentObjName);
+                }
+
+                List<SObject> lstRecordDetails = Database.query('SELECT ' + identifierField + ' FROM ' + parentObjName + ' WHERE Id = \'' + recordId + '\'');
         
                 //Add Parent SObject details to the response
                 response.parentSObj.recordId = recordId;
-                response.parentSObj.recordName = (String) lstRecordDetails[0].get('Name');
+                response.parentSObj.recordName = (String) lstRecordDetails[0].get(identifierField);
                 response.parentSObj.name = parentSobjDescribe.getName();
                 response.parentSObj.label = parentSobjDescribe.getLabel();
                 response.parentSObj.labelPlural = parentSobjDescribe.getLabelPlural();
