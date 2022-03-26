@@ -75,6 +75,8 @@ public with sharing class SObjectService {
                 //Add Permisssions to the response
                 response.permissions.accessible = true;
                 response.permissions.creatable = sobjDescribe.isCreateable();
+                response.permissions.updatable = sobjDescribe.isUpdateable();
+                response.permissions.deletable = sobjDescribe.isDeletable();
 
                 //Add Field Describe Results to the response
                 response.fieldDescribeResults = JSON.serialize(fieldDescribeResults);

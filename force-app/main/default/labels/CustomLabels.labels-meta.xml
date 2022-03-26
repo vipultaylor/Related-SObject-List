@@ -56,4 +56,60 @@
         <shortDescription>SOBject Select Recordtype</shortDescription>
         <value>Select a record type</value>
     </labels>
+    <labels>
+        <fullName>Button_Cancel</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Button Cancel</shortDescription>
+        <value>Cancel</value>
+    </labels>
+    <labels>
+        <fullName>Button_Delete</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Button Delete</shortDescription>
+        <value>Delete</value>
+    </labels>
+    <labels>
+        <fullName>Button_Next</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Button Next</shortDescription>
+        <value>Next</value>
+    </labels>
+    <labels>
+        <fullName>Delete_SObject</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Delete SObject</shortDescription>
+        <value>Delete {0}</value>
+    </labels>
+    <labels>
+        <fullName>Delete_SObject_Confirm</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Delete SObject Confirm</shortDescription>
+        <value>Are you sure you want to delete this {0}?</value>
+    </labels>
+    <labels>
+        <fullName>Delete_Success_Message</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Delete Success Message</shortDescription>
+        <value>{0} &quot;{1}&quot; was deleted.</value>
+    </labels>
+    <labels>
+        <fullName>Button_Close</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Button Close</shortDescription>
+        <value>Close</value>
+    </labels>
+    <labels>
+        <fullName>Button_View_All</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Button View All</shortDescription>
+        <value>View All</value>
+    </labels>
 </CustomLabels>

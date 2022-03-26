@@ -90,9 +90,17 @@ public class SObjectResponseWrapper {
         @AuraEnabled
         public Boolean creatable {get; set;}
 
+        @AuraEnabled
+        public Boolean updatable {get; set;}
+
+        @AuraEnabled
+        public Boolean deletable {get; set;}
+
         public Permissions(){
             this.accessible = false;
             this.creatable = false;
+            this.updatable = false;
+            this.deletable = false;
         }
     }
 

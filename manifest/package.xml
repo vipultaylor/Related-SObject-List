@@ -10,6 +10,14 @@
         <name>ApexClass</name>
     </types>
     <types>
+        <members>Button_Cancel</members>
+        <members>Button_Close</members>
+        <members>Button_Delete</members>
+        <members>Button_Next</members>
+        <members>Button_View_All</members>
+        <members>Delete_SObject</members>
+        <members>Delete_SObject_Confirm</members>
+        <members>Delete_Success_Message</members>
         <members>Error_Fieldset_Missing</members>
         <members>Error_Invalid_SObject_Name</members>
         <members>Error_Recordtypes_Missing</members>
