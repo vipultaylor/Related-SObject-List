@@ -1,0 +1,37 @@
+<aura:component implements="lightning:isUrlAddressable">
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="title" type="String"/>
+    <aura:attribute name="iconName" type="String"/>
+    <aura:attribute name="sObjectName" type="String"/>
+    <aura:attribute name="commaSeparatedRecordtypes" type="String"/>
+    <aura:attribute name="fieldSetForColumns" type="String"/>
+    <aura:attribute name="relationshipFieldNames" type="String"/>
+    <aura:attribute name="condition" type="String"/>
+    <aura:attribute name="limitCount" type="Integer"/>
+    <aura:attribute name="sortStatement" type="String"/>
+    <aura:attribute name="showNewButton" type="Boolean"/>
+    <aura:attribute name="primaryRelationshipField" type="String"/>
+    <aura:attribute name="viewAll" type="Boolean"/>
+    
+    <!-- Lightning Workspace API -->
+    <lightning:workspaceAPI aura:id="workspace" />
+    
+    <!-- INIT Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+    
+    <!-- LWC Component -->
+    <c:sobjectList recordId="{!v.recordId}"
+                   title="{!v.title}"
+                   iconName="{!v.iconName}"
+                   sObjectName="{!v.sObjectName}"
+                   commaSeparatedRecordtypes="{!v.commaSeparatedRecordtypes}"
+                   fieldSetForColumns="{!v.fieldSetForColumns}"
+                   relationshipFieldNames="{!v.relationshipFieldNames}"
+                   condition="{!v.condition}"
+                   limitCount="{!v.limitCount}"
+                   sortStatement="{!v.sortStatement}"
+                   showNewButton="{!v.showNewButton}"
+                   primaryRelationshipField="{!v.primaryRelationshipField}"
+                   viewAll="{!v.viewAll}" />
+
+</aura:component>

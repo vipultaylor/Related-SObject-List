@@ -11,7 +11,7 @@
 * --------------------------------------------------------------------------------------------------+
 */
 public with sharing class SObjectListController {
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled
     public static SObjectResponseWrapper getResponse(String recordId, SObjectRequestWrapper requestWrapper, Boolean viewAll){
         return SObjectService.getResponse(recordId, requestWrapper, viewAll);
     }

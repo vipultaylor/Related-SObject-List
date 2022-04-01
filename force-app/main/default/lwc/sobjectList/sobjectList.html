@@ -24,13 +24,18 @@
                             </template>
                             <!-- COMPONENT TITLE -->
                             <h2 class="header-title-container">
-                                <span class="slds-card__header-title slds-truncate">
-                                    {title} ({responseWrapper.sObj.displayCount})
-                                </span>
+                                <a class="slds-card__header-title slds-card__header-link" onclick={navigateToViewAll}>
+                                    <span class="slds-truncate">
+                                        {title} ({responseWrapper.sObj.displayCount})
+                                    </span>
+                                </a>
                             </h2>
                         </div> 
                         <div class="slds-no-flex">
                             <lightning-layout>
+                                <lightning-layout-item padding="horizontal-small">
+                                    <lightning-button-icon icon-name="utility:refresh" alternative-text="Refresh" title="Refresh" onclick={refreshData}></lightning-button-icon>
+                                </lightning-layout-item>
                                 <lightning-layout-item>
                                     <template if:true={showNewButton}>
                                         <template if:true={responseWrapper.permissions.creatable}>
@@ -43,11 +48,16 @@
                     </header>
                 </div>
                 <!-- Body -->
-                <template if:true={hasRecords}>
-                    <div class="slds-card__body slds-card__body_inner">
-                        <div class="slds-grid--pull-padded">
-                            <div class="slds-scrollable--x">
-                                <div class="sjp-list-view-table">
+                <div class="slds-card__body slds-card__body_inner">
+                    <div class="slds-grid--pull-padded">
+                        <div class="slds-scrollable--x">
+                            <template if:true={isRefreshing}>
+                                <div class="slds-card__body slds-card__body_inner">
+                                    <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+                                </div>
+                            </template>
+                            <template if:false={isRefreshing}>
+                                <template if:true={hasRecords}>
                                     <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-no-hover slds-table-expandable">
                                         <thead>
                                             <tr class="slds-line-height_reset">
@@ -85,15 +95,20 @@
                                             </template>
                                         </tbody>
                                     </table>
-                                </div>        
-                            </div>
+                                </template>
+                            </template>
                         </div>
                     </div>
-                
-                    <template if:false={viewAll}>
-                        <div class="slds-card__footer">
-                            <a onclick={navigateToViewAll}>{buttonViewAll}</a>
-                        </div>
+                </div>
+            
+                <!-- Footer -->
+                <template if:false={isRefreshing}>
+                    <template if:true={hasRecords}>
+                        <template if:false={viewAll}>
+                            <div class="slds-card__footer">
+                                <a onclick={navigateToViewAll}>{buttonViewAll}</a>
+                            </div>
+                        </template>
                     </template>
                 </template>
             </article>

@@ -10,6 +10,10 @@
         <name>ApexClass</name>
     </types>
     <types>
+        <members>sobjectListAuraComponent</members>
+        <name>AuraDefinitionBundle</name>
+    </types>
+    <types>
         <members>Button_Cancel</members>
         <members>Button_Close</members>
         <members>Button_Delete</members>

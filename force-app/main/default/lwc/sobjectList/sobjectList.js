@@ -34,16 +34,19 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
     @api sortStatement = 'Name ASC';
     @api showNewButton;
     @api primaryRelationshipField = '';
-
-    @api isLoaded = false;
     @api viewAll = false;
-    @api hasRecords = false;
+
+    @track isLoaded = false;
+    @track isRefreshing = false;
+    @track hasRecords = false;
 
     //Boolean tracked variable to indicate if modal is open or not default value is false as modal is closed when page is loaded 
     @track isModalOpen = false;
 
     @track isNewModal = false;
     @track isDeleteModal = false;
+
+    responseWrapper;
 
     selectedrecordtypeId = '';
     selectedRecordIdForDelete = '';
@@ -61,57 +64,8 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
         SOBject_Select_Recordtype
     };
 
-    responseWrapper = {
-        sObj: {
-            records: [],
-            displayCount: '0',
-            recordtypesEnabled: false
-        },
-        permissions: {
-            accessible: false,
-            creatable: false,
-            updatable: false,
-            deletable: false
-        }
-    };
-
     connectedCallback(){
-        //Check if the component is ready to make a call to Apex
-        if(this.sObjectName && this.commaSeparatedRecordtypes && this.fieldSetForColumns && this.relationshipFieldNames){
-            getResponse({
-                recordId: this.recordId,
-                requestWrapper: {
-                    sObjectName: this.sObjectName,
-                    commaSeparatedRecordtypes: this.commaSeparatedRecordtypes,
-                    fieldSetForColumns: this.fieldSetForColumns,
-                    additionalFields: this.additionalFields,
-                    relationshipFieldNames: this.relationshipFieldNames,
-                    condition: this.condition,
-                    limitCount: this.limitCount,
-                    sortStatement: this.sortStatement
-                },
-                viewAll: this.viewAll
-            })
-            .then(result => {
-                var fields = JSON.parse(result.fieldDescribeResults);
-                var records = this.formatData(result.sObj.lstSObjects, fields);
-                this.setRecordCounts(result.sObj.fullCountOfSObjects);
-    
-                this.responseWrapper.fields = fields;
-                this.responseWrapper.sObj.label = result.sObj.sObjectLabel;
-                this.responseWrapper.sObj.records = records;
-                this.responseWrapper.sObj.recordtypesEnabled = result.sObj.recordtypesEnabled;
-                this.responseWrapper.sObj.availableRecordtypes = result.sObj.availableRecordtypes;
-                this.responseWrapper.parentSObj = result.parentSObj;
-                this.responseWrapper.permissions = result.permissions;
-            })
-            .catch(error => {
-                this.handleError(error);
-            })
-            .finally(() => {
-                this.isLoaded = true;
-            });
-        }
+        this._getDataFromApex();
     }
 
     get breadcrumbSobjectListURL(){
@@ -125,9 +79,9 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
     get modalHeader(){
         let modalHeader;
         if(this.isNewModal){
-            modalHeader = this.formatLabel(this.LABEL.New_SObject, this.responseWrapper.sObj.label);
+            modalHeader = this._formatLabel(this.LABEL.New_SObject, this.responseWrapper.sObj.label);
         } else if (this.isDeleteModal){
-            modalHeader = this.formatLabel(this.LABEL.Delete_SObject, this.responseWrapper.sObj.label);
+            modalHeader = this._formatLabel(this.LABEL.Delete_SObject, this.responseWrapper.sObj.label);
         }
 
         return modalHeader;
@@ -154,7 +108,7 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
     }
 
     get deleteConfirmationMessage(){
-        return this.formatLabel(this.LABEL.Delete_SObject_Confirm, this.responseWrapper.sObj.label.toLowerCase());
+        return this._formatLabel(this.LABEL.Delete_SObject_Confirm, this.responseWrapper.sObj.label.toLowerCase());
     }
 
     get recordtypeOptions() {
@@ -170,31 +124,9 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
         return options;
     }
 
-    setRecordCounts(recordCount){
-        var displayCountString = '0';
-
-        if(recordCount > 0 ){
-            this.hasRecords = true;
-            
-            if(this.viewAll){
-                displayCountString = recordCount;
-            } else {
-                if(this.limitCount <=0 || this.limitCount > 10){
-                    this.limitCount = 10
-                }
-    
-                if(recordCount <= this.limitCount){
-                    displayCountString = recordCount; 
-                } else {
-                    displayCountString = this.limitCount + '+';
-                }
-            }
-        } else {
-            this.hasRecords = false;
-        }
-
-        //Set the display count
-        this.responseWrapper.sObj.displayCount = displayCountString;
+    refreshData(){
+        this.isRefreshing = true;
+        this._getDataFromApex();
     }
 
     createRecord() {
@@ -258,7 +190,7 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
         .then(() => {
             this.dispatchEvent(
                 new ShowToastEvent({
-                    message: this.formatLabel(this.LABEL.Delete_Success_Message, this.responseWrapper.sObj.label, recordName),
+                    message: this._formatLabel(this.LABEL.Delete_Success_Message, this.responseWrapper.sObj.label, recordName),
                     variant: 'success'
                 })
             );
@@ -273,28 +205,20 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
             }
 
             // Update record counts
-            this.setRecordCounts(this.responseWrapper.sObj.records.length - 1);
+            this._setRecordCounts(this.responseWrapper.sObj.records.length - 1);
         })
         .catch(error => {
-            this.handleError(error);
+            this._handleError(error);
         })
         .finally(() => {
-            this.resetVariables();
+            this._resetVariables();
         });
     }
 
     closeModal() {
         // to close modal set isModalOpen tarck value as false
         this.isModalOpen = false;
-        this.resetVariables();
-    }
-
-    resetVariables(){
-        // reset any other variables
-        this.isNewModal = false;
-        this.isDeleteModal = false;
-        this.selectedrecordtypeId = '';
-        this.selectedRecordIdForDelete = ''
+        this._resetVariables();
     }
 
     navigateToNewRecordPage(){
@@ -331,36 +255,132 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
     }
 
     navigateToViewAll() {
-        var compDefinition = {
-            componentDef: "c:sobjectList",
-            attributes: {
-                recordId: this.recordId,
-                title: this.title,
-                iconName: this.iconName,
-                iconSize: 'medium',
-                sObjectName: this.sObjectName,
-                commaSeparatedRecordtypes: this.commaSeparatedRecordtypes,
-                fieldSetForColumns: this.fieldSetForColumns,
-                relationshipFieldNames: this.relationshipFieldNames,
-                condition: this.condition,
-                limitCount: this.limitCount,
-                sortStatement: this.sortStatement,
-                showNewButton: this.showNewButton,
-                primaryRelationshipField: this.primaryRelationshipField,
-                viewAll: true
-            }
-        };
-        // Base64 encode the compDefinition JS object
-        var encodedCompDef = btoa(JSON.stringify(compDefinition));
         this[NavigationMixin.Navigate]({
-            type: 'standard__webPage',
+            type: 'standard__component',
             attributes: {
-                url: '/one/one.app#' + encodedCompDef
+                componentName: 'c__sObjectListAuraComponent' //aura component name
+            },
+            state: {
+                c__recordId: this.recordId,
+                c__title: this.title,
+                c__iconName: this.iconName,
+                c__iconSize: 'medium',
+                c__sObjectName: this.sObjectName,
+                c__commaSeparatedRecordtypes: this.commaSeparatedRecordtypes,
+                c__fieldSetForColumns: this.fieldSetForColumns,
+                c__relationshipFieldNames: this.relationshipFieldNames,
+                c__condition: this.condition,
+                c__limitCount: this.limitCount,
+                c__sortStatement: this.sortStatement,
+                c__showNewButton: this.showNewButton,
+                c__primaryRelationshipField: this.primaryRelationshipField,
+                c__viewAll: true
             }
         });
     }
 
-    formatData(data, fields){
+    _resetResponsWrapper(){
+        this.responseWrapper = undefined;
+        this.responseWrapper = {
+            sObj: {
+                records: [],
+                displayCount: '0',
+                recordtypesEnabled: false
+            },
+            parentSObj: {
+                name: '',
+                recordName: '',
+                labelPlural: ''
+            },
+            permissions: {
+                accessible: this.isRefreshing,
+                creatable: false,
+                updatable: false,
+                deletable: false
+            }
+        };
+    }
+
+    _resetVariables(){
+        // reset any other variables
+        this.isNewModal = false;
+        this.isDeleteModal = false;
+        this.selectedrecordtypeId = '';
+        this.selectedRecordIdForDelete = ''
+    }
+
+    _getDataFromApex(){
+        //Reset Data every time before the apex is called
+        //to ensure that the display is refreshed when the refresh method is called
+        this._resetResponsWrapper();
+
+        //Check if the component is ready to make a call to Apex
+        if(this.recordId && this.sObjectName && this.commaSeparatedRecordtypes && this.fieldSetForColumns && this.relationshipFieldNames){
+            getResponse({
+                recordId: this.recordId,
+                requestWrapper: {
+                    sObjectName: this.sObjectName,
+                    commaSeparatedRecordtypes: this.commaSeparatedRecordtypes,
+                    fieldSetForColumns: this.fieldSetForColumns,
+                    additionalFields: this.additionalFields,
+                    relationshipFieldNames: this.relationshipFieldNames,
+                    condition: this.condition,
+                    limitCount: this.limitCount,
+                    sortStatement: this.sortStatement
+                },
+                viewAll: this.viewAll
+            })
+            .then(result => {
+                var fields = JSON.parse(result.fieldDescribeResults);
+                var records = this._formatData(result.sObj.lstSObjects, fields);
+                this._setRecordCounts(result.sObj.fullCountOfSObjects);
+    
+                this.responseWrapper.fields = fields;
+                this.responseWrapper.sObj.label = result.sObj.sObjectLabel;
+                this.responseWrapper.sObj.records = records;
+                this.responseWrapper.sObj.recordtypesEnabled = result.sObj.recordtypesEnabled;
+                this.responseWrapper.sObj.availableRecordtypes = result.sObj.availableRecordtypes;
+                this.responseWrapper.parentSObj = result.parentSObj;
+                this.responseWrapper.permissions = result.permissions;
+            })
+            .catch(error => {
+                this._handleError(error);
+            })
+            .finally(() => {
+                this.isLoaded = true;
+                this.isRefreshing = false;
+            });
+        }
+    }
+
+    _setRecordCounts(recordCount){
+        var displayCountString = '0';
+
+        if(recordCount > 0 ){
+            this.hasRecords = true;
+            
+            if(this.viewAll){
+                displayCountString = recordCount;
+            } else {
+                if(this.limitCount <=0 || this.limitCount > 10){
+                    this.limitCount = 10
+                }
+    
+                if(recordCount <= this.limitCount){
+                    displayCountString = recordCount; 
+                } else {
+                    displayCountString = this.limitCount + '+';
+                }
+            }
+        } else {
+            this.hasRecords = false;
+        }
+
+        //Set the display count
+        this.responseWrapper.sObj.displayCount = displayCountString;
+    }
+
+    _formatData(data, fields){
         debugger; 
         var lstObjectsNotNavigatable = ['RecordType'];
         var records = [];
@@ -411,13 +431,13 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
         return records;
     }
 
-    formatLabel(stringToFormat, ...formattingArguments) {
+    _formatLabel(stringToFormat, ...formattingArguments) {
         if (typeof stringToFormat !== 'string') throw new Error('\'stringToFormat\' must be a String');
         return stringToFormat.replace(/{(\d+)}/gm, (match, index) =>
             (formattingArguments[index] === undefined ? '' : `${formattingArguments[index]}`));
     }
     
-    handleError(error){
+    _handleError(error){
         debugger;
         console.error(error);
         let message = 'Unknown error';
