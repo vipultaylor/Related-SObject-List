@@ -1,5 +1,13 @@
 <template> 
     <div class="slds-truncate">
+        <template if:true={field.properties.isBoolean}>
+            <template if:true={field.value}>
+                <lightning-input type="checkbox" checked disabled></lightning-input>
+            </template>
+            <template if:false={field.value}>
+                <lightning-input type="checkbox" disabled></lightning-input>
+            </template>
+        </template>
         <template if:true={field.properties.isCurrency}>
             <lightning-formatted-number value={field.value} format-style="currency" currency-code={field.currencyIsoCode} currency-display-as="code" maximum-fraction-digits={field.properties.scale}></lightning-formatted-number>
         </template>
@@ -36,6 +44,12 @@
             <template if:false={field.properties.isNavigatable}>
                 <lightning-formatted-text value={field.value}></lightning-formatted-text>
             </template>
+        </template>
+        <template if:true={field.properties.isText}>
+            <lightning-formatted-text value={field.value}></lightning-formatted-text>
+        </template>
+        <template if:true={field.properties.isTextArea}>
+            <lightning-formatted-text value={field.value}></lightning-formatted-text>
         </template>
         <template if:true={field.properties.isURL}>
             <lightning-formatted-text value={field.value} linkify="true"></lightning-formatted-text>
