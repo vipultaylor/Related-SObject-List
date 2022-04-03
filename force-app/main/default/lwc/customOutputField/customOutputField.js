@@ -9,6 +9,10 @@ export default class CustomOutputField extends NavigationMixin(LightningElement)
     @api currencyisocode;
 
     get field(){
+        if(this.fielddescribe.name == 'Description'){
+            console.log('customOutputField fielddescribe');
+            console.log(JSON.parse(JSON.stringify(this.fielddescribe)));
+        }
         var fieldObj = {
             properties: {
                 isBoolean: false,
@@ -18,6 +22,7 @@ export default class CustomOutputField extends NavigationMixin(LightningElement)
                 isNumber: false,
                 isName: false,
                 isText: false,
+                isTextArea: false,
                 isPercent: false,
                 isReference: false,
             },
@@ -51,6 +56,9 @@ export default class CustomOutputField extends NavigationMixin(LightningElement)
                 fieldObj.properties.isReference = true;
                 fieldObj.recordid = this.recordid;
                 fieldObj.properties.isNavigatable = this.isnavigatable;
+                break;
+            case 'textarea': 
+                fieldObj.properties.isTextArea = true;
                 break;
             default:
 

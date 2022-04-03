@@ -50,7 +50,7 @@
                 <!-- Body -->
                 <div class="slds-card__body slds-card__body_inner">
                     <div class="slds-grid--pull-padded">
-                        <div class="slds-scrollable--x">
+                        <div class="slds-scrollable--y">
                             <template if:true={isRefreshing}>
                                 <div class="slds-card__body slds-card__body_inner">
                                     <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
@@ -58,7 +58,7 @@
                             </template>
                             <template if:false={isRefreshing}>
                                 <template if:true={hasRecords}>
-                                    <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-no-hover slds-table-expandable">
+                                    <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-no-hover slds-table_fixed-layout">
                                         <thead>
                                             <tr class="slds-line-height_reset">
                                                 <template for:each={responseWrapper.fields} for:item="field">
@@ -67,7 +67,7 @@
                                                     </th>
                                                 </template>
                                                 <!-- Action Menu -->
-                                                <th></th>
+                                                <th style="width: 50px;"></th>
                                             </tr>
                                         </thead>
                                         <tbody>
