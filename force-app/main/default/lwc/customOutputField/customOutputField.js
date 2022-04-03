@@ -8,82 +8,90 @@ export default class CustomOutputField extends NavigationMixin(LightningElement)
     @api isnavigatable = false;
     @api currencyisocode;
 
-    get field(){
-        if(this.fielddescribe.name == 'Description'){
-            console.log('customOutputField fielddescribe');
-            console.log(JSON.parse(JSON.stringify(this.fielddescribe)));
-        }
-        var fieldObj = {
-            properties: {
-                isBoolean: false,
-                isCurrency: false,
-                isDate: false,
-                isDateTime: false,
-                isNumber: false,
-                isName: false,
-                isText: false,
-                isTextArea: false,
-                isPercent: false,
-                isReference: false,
-            },
-            value: this.fieldvalue,
-            currencyIsoCode: this.currencyisocode
-        };
+    field = {
+        properties: {
+            isBoolean: false,
+            isCurrency: false,
+            isDate: false,
+            isDateTime: false,
+            isEmail: false,
+            isName: false,
+            isNumber: false,
+            isPercent: false,
+            isReference: false,
+            isText: false,
+            isTextArea: false,
+            isURL: false,
+        },
+    }
 
+    connectedCallback(){
         switch(this.fielddescribe.type){
             case 'boolean': 
-                fieldObj.properties.isBoolean = true;
+                this.field.properties.isBoolean = true;
                 break;
             case 'currency': 
-                fieldObj.properties.isCurrency = true;
-                fieldObj.properties.scale = this.fielddescribe.scale;
+                this.field.properties.isCurrency = true;
+                this.field.properties.scale = this.fielddescribe.scale;
                 break;
             case 'date': 
-                fieldObj.properties.isDate = true;
+                this.field.properties.isDate = true;
                 break;
             case 'datetime': 
-                fieldObj.properties.isDateTime = true;
+                this.field.properties.isDateTime = true;
+                break;
+            case 'email': 
+                this.field.properties.isEmail = true;
                 break;
             case 'double': 
-                fieldObj.properties.isNumber = true;
-                fieldObj.properties.scale = this.fielddescribe.scale;
+                this.field.properties.isNumber = true;
+                this.field.properties.scale = this.fielddescribe.scale;
                 break;
             case 'percent': 
-                fieldObj.properties.isPercent = true;
-                fieldObj.properties.scale = this.fielddescribe.scale;
+                this.field.properties.isPercent = true;
+                this.field.properties.scale = this.fielddescribe.scale;
                 break;
             case 'reference': 
-                fieldObj.properties.isReference = true;
-                fieldObj.recordid = this.recordid;
-                fieldObj.properties.isNavigatable = this.isnavigatable;
+                this.field.properties.isReference = true;
+                this.field.recordid = this.recordid;
+                this.field.properties.isNavigatable = this.isnavigatable;
                 break;
             case 'textarea': 
-                fieldObj.properties.isTextArea = true;
+                this.field.properties.isTextArea = true;
+                break;
+            case 'url': 
+                this.field.properties.isURL = true;
                 break;
             default:
 
                 if(this.fielddescribe.nameField){
-                    fieldObj.properties.isName = true;
-                    fieldObj.recordid = this.recordid;
-                    //fieldObj.href = '/' + this.recordid;
+                    this.field.properties.isName = true;
+                    this.field.recordid = this.recordid;
+                    //this.field.href = '/' + this.recordid;
                 } else if(this.fieldvalue!=null && this.fieldvalue.endsWith("</a>")){
                     var hrefStart = this.fieldvalue.indexOf("\"")+1;
                     var hrefEnd = this.fieldvalue.indexOf("\"",hrefStart);
-                    var href = this.fieldvalue.substr(hrefStart,hrefEnd-hrefStart);
+                    var href = this.fieldvalue.substr(hrefStart, hrefEnd-hrefStart);
                     var displayStart =  this.fieldvalue.indexOf(">")+1;
                     var displayEnd =  this.fieldvalue.indexOf("<",displayStart);
-                    var value = this.fieldvalue.substr(displayStart,displayEnd-displayStart);
-                    fieldObj.properties.isName = true;
-                    fieldObj.value = value;
-                    fieldObj.recordid = href;
+                    var value = this.fieldvalue.substr(displayStart, displayEnd-displayStart);
+                    this.field.properties.isName = true;
+                    this.field.value = value;
+                    this.field.recordid = href;
                 }
                 else {
-                    fieldObj.properties.isText = true;
+                    this.field.properties.isText = true;
                 }
         }
 
-        return fieldObj;
+        this.field.value = this.fieldvalue;
+        this.field.currencyIsoCode = this.currencyisocode;
     }
+
+    get field(){
+        return this.field;
+    }
+
 
     navigateToRecordViewPage(event) {
         var recordId = event.currentTarget.getAttribute('data-recordid');

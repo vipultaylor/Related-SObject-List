@@ -9,8 +9,8 @@
         <template if:true={field.properties.isDateTime}>
             <lightning-formatted-date-time value={field.value}></lightning-formatted-date-time>
         </template>
-        <template if:true={field.properties.isNumber}>
-            <lightning-formatted-number value={field.value} maximum-fraction-digits={field.properties.scale}></lightning-formatted-number>
+        <template if:true={field.properties.isEmail}>
+            <lightning-formatted-text value={field.value} linkify="true"></lightning-formatted-text>
         </template>
         <template if:true={field.properties.isName}>
             <div class="forceOutputLookupWithPreview">
@@ -19,11 +19,8 @@
                 </a>
             </div>    
         </template>
-        <template if:true={field.properties.isText}>
-            <lightning-formatted-text value={field.value}></lightning-formatted-text>
-        </template>
-        <template if:true={field.properties.isTextArea}>
-            <lightning-formatted-text value={field.value}></lightning-formatted-text>
+        <template if:true={field.properties.isNumber}>
+            <lightning-formatted-number value={field.value} maximum-fraction-digits={field.properties.scale}></lightning-formatted-number>
         </template>
         <template if:true={field.properties.isPercent}>
             <lightning-formatted-number value={field.value} maximum-fraction-digits={field.properties.scale}></lightning-formatted-number> %
@@ -39,6 +36,9 @@
             <template if:false={field.properties.isNavigatable}>
                 <lightning-formatted-text value={field.value}></lightning-formatted-text>
             </template>
+        </template>
+        <template if:true={field.properties.isURL}>
+            <lightning-formatted-text value={field.value} linkify="true"></lightning-formatted-text>
         </template>
     </div>
 </template>
