@@ -46,7 +46,7 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
     @track isNewModal = false;
     @track isDeleteModal = false;
 
-    responseWrapper;
+    @track responseWrapper;
 
     selectedrecordtypeId = '';
     selectedRecordIdForDelete = '';
@@ -187,32 +187,32 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
 
         // Pass the record id to deleteRecord method
         deleteRecord(deleteId)
-        .then(() => {
-            this.dispatchEvent(
-                new ShowToastEvent({
-                    message: this._formatLabel(this.LABEL.Delete_Success_Message, this.responseWrapper.sObj.label, recordName),
-                    variant: 'success'
-                })
-            );
+            .then(() => {
+                this.dispatchEvent(
+                    new ShowToastEvent({
+                        message: this._formatLabel(this.LABEL.Delete_Success_Message, this.responseWrapper.sObj.label, recordName),
+                        variant: 'success'
+                    })
+                );
 
-            // Delete the record from UI
-            for(let recordIndex in this.responseWrapper.sObj.records){
-                let record = this.responseWrapper.sObj.records[recordIndex];
-                if(record.Id == this.selectedRecordIdForDelete){
-                    this.responseWrapper.sObj.records.splice(recordIndex, 1);
-                    break;
+                // Delete the record from UI
+                for(let recordIndex in this.responseWrapper.sObj.records){
+                    let record = this.responseWrapper.sObj.records[recordIndex];
+                    if(record.Id == this.selectedRecordIdForDelete){
+                        this.responseWrapper.sObj.records.splice(recordIndex, 1);
+                        break;
+                    }
                 }
-            }
 
-            // Update record counts
-            this._setRecordCounts(this.responseWrapper.sObj.records.length - 1);
-        })
-        .catch(error => {
-            this._handleError(error);
-        })
-        .finally(() => {
-            this._resetVariables();
-        });
+                // Update record counts
+                this._setRecordCounts(this.responseWrapper.sObj.records.length);
+            })
+            .catch(error => {
+                this._handleError(error);
+            })
+            .finally(() => {
+                this._resetVariables();
+            });
     }
 
     closeModal() {
