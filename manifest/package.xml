@@ -38,6 +38,7 @@
     </types>
     <types>
         <members>customOutputField</members>
+        <members>sobjectCompactLayoutOnHover</members>
         <members>sobjectList</members>
         <name>LightningComponentBundle</name>
     </types>

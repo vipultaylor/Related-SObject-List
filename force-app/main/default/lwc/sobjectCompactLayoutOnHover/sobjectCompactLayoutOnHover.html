@@ -1,0 +1,46 @@
+<template>
+    <template if:true={isLoaded}>
+        <div id="popoverContainer" style="position: absolute !important;">
+            <section class="slds-popover slds-popover_panel slds-nubbin_left-top custom-popover-section" role="dialog" aria-labelledby="custom-popover-header-id" aria-describedby="custom-popover-body-id" onblur={closePopover} onmouseover={keepPopoverActive} onmouseleave={closePopover}>
+                <span class="slds-float_right slds-popover__close">
+                    <lightning-button-icon icon-name="utility:close" variant="bare" size="small" alternative-text="Close" title="Close" onclick={closePopover}></lightning-button-icon>
+                </span>
+                <div class="slds-popover__header" id="custom-popover-header-id">
+                    <header class="slds-media slds-media_center slds-m-bottom_small">
+                        <span class="slds-icon_container slds-media__figure">
+                            <div class="slds-icon slds-icon_medium custom-popover-title-icon">
+                                <img src={primaryObjectInfo.themeInfo.iconUrl} class="icon" alt={primaryObjectInfo.label} title={primaryObjectInfo.label}/>
+                            </div>
+                        </span>
+                        <div class="slds-media__body">
+                            <h2 class="slds-text-heading_small slds-hyphenate">
+                                <c-custom-output-field field-describe={titleField.fieldDescribe} 
+                                                            field-value={titleField.value} 
+                                                            record-id={recordId}></c-custom-output-field>
+                            </h2>
+                        </div>
+                    </header>
+                    <footer class="slds-grid slds-wrap slds-grid_pull-padded">
+                        <template for:each={summaryFields} for:item="field">
+                            <div class="slds-p-horizontal_small slds-size_1-of-2 slds-p-bottom_small" key={field.fieldDescribe.apiName}>
+                                <dl>
+                                    <dt>
+                                        <p class="slds-popover_panel__label slds-text-title slds-truncate" title={field.fieldDescribe.label}>{field.fieldDescribe.label}</p>
+                                    </dt>
+                                    <dd>
+                                        <c-custom-output-field field-describe={field.fieldDescribe} 
+                                            field-value={field.value} 
+                                            record-id={recordId}></c-custom-output-field>
+                                    </dd>
+                                </dl>
+                            </div>
+                        </template>
+                    </footer>
+                </div>
+                <div class="slds-popover__body" id="custom-popover-body-id">
+                    <!-- RELATED LISTS -->
+                </div>
+            </section>
+        </div>
+    </template>
+</template>

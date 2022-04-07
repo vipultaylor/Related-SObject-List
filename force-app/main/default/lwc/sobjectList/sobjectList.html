@@ -1,7 +1,7 @@
 <template>
     <template if:true={isLoaded}>
         <template if:true={responseWrapper.permissions.accessible}>
-            <article class="slds-card slds-card_boundary forceBaseCard forceRelatedListCardDesktop">
+            <article class="slds-card slds-card_boundary forceBaseCard forceRelatedListCardDesktop custom-sobject-list-container">
                 <!-- Header -->
                 <div class="slds-card__header slds-grid">
                     <header class="slds-media slds-media_center slds-has-flexi-truncate">
@@ -24,11 +24,18 @@
                             </template>
                             <!-- COMPONENT TITLE -->
                             <h2 class="header-title-container">
-                                <a class="slds-card__header-title slds-card__header-link" onclick={navigateToViewAll}>
-                                    <span class="slds-truncate">
+                                <template if:true={viewAll}>
+                                    <div class="slds-card__header-title slds-truncate">
                                         {title} ({responseWrapper.sObj.displayCount})
-                                    </span>
-                                </a>
+                                    </div>
+                                </template>
+                                <template if:false={viewAll}>
+                                    <a class="slds-card__header-title slds-card__header-link" onclick={navigateToViewAll}>
+                                        <span class="slds-truncate">
+                                            {title} ({responseWrapper.sObj.displayCount})
+                                        </span>
+                                    </a>
+                                </template>
                             </h2>
                         </div> 
                         <div class="slds-no-flex">
@@ -50,54 +57,59 @@
                 <!-- Body -->
                 <div class="slds-card__body slds-card__body_inner">
                     <div class="slds-grid--pull-padded">
-                        <div class="slds-scrollable--y">
-                            <template if:true={isRefreshing}>
-                                <div class="slds-card__body slds-card__body_inner">
-                                    <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
-                                </div>
-                            </template>
-                            <template if:false={isRefreshing}>
-                                <template if:true={hasRecords}>
-                                    <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-no-hover slds-table_fixed-layout">
-                                        <thead>
-                                            <tr class="slds-line-height_reset">
-                                                <template for:each={responseWrapper.fields} for:item="field">
-                                                    <th key={field.name} class="slds-text-heading--label" scope="col">
-                                                        <div class="slds-truncate" >{field.label}</div>
-                                                    </th>
-                                                </template>
-                                                <!-- Action Menu -->
+                        <template if:true={isRefreshing}>
+                            <div class="slds-card__body slds-card__body_inner">
+                                <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+                            </div>
+                        </template>
+                        <template if:false={isRefreshing}>
+                            <template if:true={hasRecords}>
+                                <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-no-hover slds-table_fixed-layout">
+                                    <thead>
+                                        <tr class="slds-line-height_reset">
+                                            <template if:true={viewAll}>
                                                 <th style="width: 50px;"></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <template for:each={responseWrapper.sObj.records} for:item="record">
-                                                <tr key={record.Id} class="slds-no-hover">
-                                                    <template for:each={record.fields} for:item="recordField">
-                                                        <td data-label={recordField.fieldDescribe.label} key={recordField.key}>
-                                                            <c-custom-output-field fielddescribe={recordField.fieldDescribe} 
-                                                                                    fieldvalue={recordField.value} 
-                                                                                    recordid={recordField.recordId}
-                                                                                    isnavigatable={recordField.isNavigatable}></c-custom-output-field>
-                                                        </td>
-                                                    </template>
-                                                    <td>
-                                                        <lightning-button-menu icon-size="x-small" menu-alignment="auto" alternative-text="Show menu">
-                                                            <template if:true={responseWrapper.permissions.updatable}>
-                                                                <lightning-menu-item value={record.Id} label="Edit" onclick={editRecord}></lightning-menu-item>
-                                                            </template>
-                                                            <template if:true={responseWrapper.permissions.deletable}>
-                                                                <lightning-menu-item value={record.Id} label="Delete" onclick={deleteRecord}></lightning-menu-item>
-                                                            </template>
-                                                        </lightning-button-menu>
-                                                    </td>
-                                                </tr>
                                             </template>
-                                        </tbody>
-                                    </table>
-                                </template>
+                                            <template for:each={responseWrapper.fields} for:item="field">
+                                                <th key={field.name} class="slds-text-heading--label" scope="col">
+                                                    <div class="slds-truncate" >{field.label}</div>
+                                                </th>
+                                            </template>
+                                            <!-- Action Menu -->
+                                            <th style="width: 50px;"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <template for:each={responseWrapper.sObj.records} for:item="record">
+                                            <tr key={record.Id} class="slds-no-hover">
+                                                <template if:true={viewAll}>
+                                                    <td class="slds-text-align_center">{record.index}</td>
+                                                </template>
+                                                <template for:each={record.fields} for:item="recordField">
+                                                    <td data-label={recordField.fieldDescribe.label} key={recordField.key}>
+                                                        <c-custom-output-field field-describe={recordField.fieldDescribe} 
+                                                                                field-value={recordField.value} 
+                                                                                record-id={recordField.recordId}
+                                                                                is-navigatable={recordField.isNavigatable}
+                                                                                is-hoverable="true"></c-custom-output-field>
+                                                    </td>
+                                                </template>
+                                                <td>
+                                                    <lightning-button-menu icon-size="x-small" menu-alignment="auto" alternative-text="Show menu">
+                                                        <template if:true={responseWrapper.permissions.updatable}>
+                                                            <lightning-menu-item value={record.Id} label="Edit" onclick={editRecord}></lightning-menu-item>
+                                                        </template>
+                                                        <template if:true={responseWrapper.permissions.deletable}>
+                                                            <lightning-menu-item value={record.Id} label="Delete" onclick={deleteRecord}></lightning-menu-item>
+                                                        </template>
+                                                    </lightning-button-menu>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
                             </template>
-                        </div>
+                        </template>
                     </div>
                 </div>
             

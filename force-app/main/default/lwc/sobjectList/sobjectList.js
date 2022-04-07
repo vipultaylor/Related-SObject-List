@@ -35,10 +35,12 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
     @api showNewButton;
     @api primaryRelationshipField = '';
     @api viewAll = false;
+    @api zIndex = 100;
 
     @track isLoaded = false;
     @track isRefreshing = false;
     @track hasRecords = false;
+    @track hasRendered = false;
 
     //Boolean tracked variable to indicate if modal is open or not default value is false as modal is closed when page is loaded 
     @track isModalOpen = false;
@@ -65,7 +67,19 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
     };
 
     connectedCallback(){
-        this._getDataFromApex();
+        if(!this.hasRendered){
+            this._getDataFromApex();
+        }
+    }
+
+    renderedCallback(){
+        if(!this.hasRendered){
+            let containerElement = this.template.querySelector(".custom-sobject-list-container");
+            if(containerElement){
+                containerElement.style["z-index"] = this.zIndex;
+                this.hasRendered = true;
+            }
+        }
     }
 
     get breadcrumbSobjectListURL(){
@@ -385,8 +399,9 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
         var lstObjectsNotNavigatable = ['RecordType'];
         var records = [];
         if(data){
-            data.forEach(record => {
+            data.forEach((record, recordIndex) => {
                 var recordObj = new Object();
+                recordObj.index = recordIndex + 1;
                 recordObj.fields = [];
                 recordObj.Id = record.Id;
                 if(fields){
