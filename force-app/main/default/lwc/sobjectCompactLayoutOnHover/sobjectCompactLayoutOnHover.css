@@ -1,3 +1,7 @@
 .custom-popover-title-icon {
     border-radius: 4px;
 }
+
+.custom-popover-section .slds-popover__header{
+    padding: 0.75rem !important;
+}
