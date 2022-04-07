@@ -18,9 +18,7 @@ This component allows you to place a Related Sobject List on any lightning recor
 
 
 ## Known Issues
-* The related list does not refresh when a new record is created. A separate refresh button is added allowing users to manually refresh the list
-* The related list does not refresh when a record from the list is edited. A separate refresh button is added allowing users to manually refresh the list
-* Every time you click the View All button (in a console app), it opens up a new subtab rather than refreshing a previously opened subtab
+All known issues are captured [here](https://github.com/vipultaylor/Related-SObject-List/issues)
 
 ## Documentation
 
