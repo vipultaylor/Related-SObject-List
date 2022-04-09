@@ -13,11 +13,12 @@ This component allows you to place a Related Sobject List on any lightning recor
 * Customize the New record behaviour
 * Respects the security settings for the SObjects
 * Mimic a View All behaviour similar to the standard related list
+* Show a custom popover on record link hovers
+![Related SObject List](https://github.com/vipultaylor/Related-SObject-List/blob/master/images/related-sobject-list-hover.png)
+
 
 ## Known Issues
-* The related list does not refresh when a new record is created. A separate refresh button is added allowing users to manually refresh the list
-* The related list does not refresh when a record from the list is edited. A separate refresh button is added allowing users to manually refresh the list
-* Every ime you click the View All button (in a console app), it opens up a new subtab
+All known issues are captured [here](https://github.com/vipultaylor/Related-SObject-List/issues)
 
 ## Documentation
 
