@@ -16,6 +16,21 @@ This component allows you to place a Related Sobject List on any lightning recor
 * Show a custom popover on record link hovers
 ![Related SObject List](https://github.com/vipultaylor/Related-SObject-List/blob/master/images/related-sobject-list-hover.png)
 
+## Package Install
+
+You can install this component (unmanaged) into your production or sandbox org. As always, test out any changes in sandbox first
+
+#### Production / Developer
+<a href="https://githubsfdeploy.herokuapp.com/app/githubdeploy/vipultaylor/related-sobject-list">
+  <img alt="Deploy to Salesforce"
+       src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/deploy.png">
+</a>
+
+#### Sandbox
+<a href="https://githubsfdeploy-sandbox.herokuapp.com/app/githubdeploy/vipultaylor/related-sobject-list">
+  <img alt="Deploy to Salesforce"
+       src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/deploy.png">
+</a>
 
 ## Known Issues
 All known issues are captured [here](https://github.com/vipultaylor/Related-SObject-List/issues)
