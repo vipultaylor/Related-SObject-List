@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
     <labels>
         <fullName>Button_Cancel</fullName>
@@ -61,8 +61,14 @@
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>Error Fieldset Missing</shortDescription>
-        <value
-    >Please provide fieldset developername for displaying columns for object {0}</value>
+        <value>Please provide fieldset developername for displaying columns for object {0}</value>
+    </labels>
+    <labels>
+        <fullName>Error_Invalid_Parent_Identifier_Field</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Error Invalid Parent Identifier Field</shortDescription>
+        <value>Invalid Parent Identifier Field</value>
     </labels>
     <labels>
         <fullName>Error_Invalid_SObject_Name</fullName>
@@ -82,10 +88,8 @@
         <fullName>Error_Relationship_Field_Names_Missing</fullName>
         <language>en_US</language>
         <protected>true</protected>
-        <shortDescription
-    >Error Relationship Field Names Missing</shortDescription>
-        <value
-    >Please provide comma separated relationship field names for Object {0} that will be used to filter for the record id: {1}</value>
+        <shortDescription>Error Relationship Field Names Missing</shortDescription>
+        <value>Please provide comma separated relationship field names for Object {0} that will be used to filter for the record id: {1}</value>
     </labels>
     <labels>
         <fullName>Error_SObject_Information_Missing</fullName>

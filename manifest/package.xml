@@ -27,6 +27,7 @@
         <members>Delete_Success_Message</members>
         <members>Error_Fieldset_Missing</members>
         <members>Error_Invalid_SObject_Name</members>
+        <members>Error_Invalid_Parent_Identifier_Field</members>
         <members>Error_Recordtypes_Missing</members>
         <members>Error_Relationship_Field_Names_Missing</members>
         <members>Error_SObject_Information_Missing</members>

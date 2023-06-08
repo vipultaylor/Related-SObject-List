@@ -2,124 +2,99 @@
 <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>52.0</apiVersion>
     <masterLabel>SObject Related List</masterLabel>
-    <description
-  >The component is used to display the list of related Sobject records for a "parent" record</description>
+    <description>The component is used to display the list of related Sobject records for a "parent" record</description>
     <isExposed>true</isExposed>
     <targets>
         <target>lightning__RecordPage</target>
     </targets>
     <targetConfigs>
         <targetConfig targets="lightning__RecordPage">
-            <property
-        name="sObjectName"
-        type="String"
-        label="SObject Name"
-        description="SObject Name for the list of records which should be displayed"
-      />
-            <property
-        name="commaSeparatedRecordtypes"
-        type="String"
-        label="Record Types that should be displayed for the SObject. Use the keyword 'ALL_RECORDTYPES' for querying all recordtypes or if recordtypes are not enabled for this object"
-        default="ALL_RECORDTYPES"
-        description="Comma separated list record types to display"
-      />
-            <property
-        name="fieldSetForColumns"
-        type="String"
-        label="Field Set for SObject that will be used to display the columns in the table"
-        description="Name of the Field Set that will be used to to display the columns for the records"
-      />
-            <property
-        name="idField"
-        type="String"
-        label="Parent Object Id Field"
-        description="Id Field through which the related records are associated to the parent record. If left empty, it will assume the current record Id as the parent Id field"
-      />
-            <property
-        name="relationshipFieldNames"
-        type="String"
-        label="Relationship Field Names"
-        description="Comma Separated Field Name(s) through which the related records are associated to the parent record. If you use multiple fields, any records which are associated to this record via any of those fields will be included in the query"
-      />
-            <property
-        name="condition"
-        type="String"
-        label="Additional Query Condition"
-        description="Any additional query condition"
-      />
-            <property
-        name="limitCount"
-        type="Integer"
-        label="How many records should be displayed by default? (max 10)"
-        description=""
-      />
-            <property
-        name="sortStatement"
-        type="String"
-        label="Sort"
-        description="Sort Mode. Syntax = Field API Name and ASC/DESC e.g. CreatedDate DESC"
-      />
+            <property name="sObjectName" 
+						type="String" 
+						label="SObject Name" 
+						description="SObject Name for the list of records which should be displayed"/>
+            <property name="commaSeparatedRecordtypes" 
+						type="String" 
+						label="Record Types that should be displayed for the SObject. Use the keyword 'ALL_RECORDTYPES' for querying all recordtypes or if recordtypes are not enabled for this object" 
+						default="ALL_RECORDTYPES" 
+						description="Comma separated list record types to display" />
+            <property name="fieldSetForColumns" 
+						type="String" 
+						label="Field Set for SObject" 
+						description="Name of the Field Set that will be used to to display the columns for the records" />
+            <property name="relationshipFieldNames"
+						type="String"
+        				label="Relationship Field Names"
+        				description="Comma Separated Field API Name(s) through which the related records are associated to the parent record. If you use multiple fields, any records which are associated to this record via any of those fields will be included in the query" />
+            <property name="hyperlinkFieldNames"
+						type="String"
+        				label="Hyperlink Field Names"
+        				description="Comma Separated Field API Name(s) which should be converted to a hyperlink to the corresponding record." />
+            <property name="idField" 
+						type="String" 
+						label="Parent Object Identifier Field Name" 
+						description="Id Field API Name through which the related records are associated to the parent record. If left empty, it will assume the current record Id as the parent Id field" />
+            <property name="condition"
+						type="String"
+						label="Additional Query Condition"
+						description="Any additional query condition" />
+            <property name="limitCount"
+						type="Integer"
+						label="How many records should be displayed by default? (max 10)"
+						description="" />
+            <property name="sortStatement" 
+						type="String"
+						label="Sort"
+        				description="Sort Mode. Syntax = Field API Name and ASC/DESC e.g. CreatedDate DESC"/>
 
-            <property
-        name="title"
-        type="String"
-        label="Title"
-        description="An alternative title, to display as the component header"
-      />
-            <property
-        name="iconName"
-        type="String"
-        label="Icon Name"
-        placeholder="standard:app"
-        description="Component Icon Name"
-      />
-            <property
-        name="displayType"
-        type="String"
-        label="Display Type"
-        datasource="apex://SObjectListDisplayTypePicklist"
-      />
+            <property name="title"
+						type="String"
+						label="Title"
+						description="A title to display as the component header" />
+            <property name="iconName"
+						type="String"
+        				label="Icon Name"
+        				placeholder="standard:app"
+        				description="Component Icon Name. Use slds icon format e.g. standard:app" />
+            <property name="displayType"
+						type="String"
+        				label="Display Type"
+        				datasource="apex://SObjectListDisplayTypePicklist"/>
 
-            <property
-        name="showHeader"
-        type="Boolean"
-        label="Show Header"
-        default="true"
-        description="Whether to show Header on the component. If false, 'New' record functionality will not be available"
-      />
-            <property
-        name="showNewButton"
-        type="Boolean"
-        label="Show New Button?"
-        default="true"
-        description="Whether to show New button on the component. If selected, the component will respect the SObject permissions"
-      />
-            <property
-        name="isHoverable"
-        type="Boolean"
-        label="Allow Hover on record Hyperlinks?"
-        default="false"
-      />
-            <property
-        name="allowTextWrapping"
-        type="Boolean"
-        label="Allow Text Wrapping?"
-        default="true"
-        description="Whether to allow text wrapping in Text Area fields. If false, the lines in the text area fields will be truncated"
-      />
+            <property name="showHeader"
+						type="Boolean"
+        				label="Show Header"
+						default="true"
+						description="Whether to show Header on the component. If false, 'New' record functionality will not be available" />
+            <property name="hideOnZeroRecords"
+						type="Boolean"
+						label="Hide On No Records?"
+						default="true"
+						description="Whether to show the component if no records are found" />
+            <property name="showNewButton"
+						type="Boolean"
+						label="Show New Button?"
+						default="true"
+						description="Whether to show New button on the component. If selected, the component will respect the SObject permissions" />
+            <property name="isHoverable"
+						type="Boolean"
+						label="Allow Hover on record Hyperlinks?"
+						default="false" />
+            <property name="allowTextWrapping"
+						type="Boolean"
+						label="Allow Text Wrapping?"
+						default="true"
+        				description="Whether to allow text wrapping in Text Area fields. If false, the lines in the text area fields will be truncated" />
             
-            <property
-        name="primaryRelationshipField"
-        type="String"
-        label="Primary Relationship Field Name"
-        description="Field Name(s) which should be pre-populated with this recordId when clicking on the New button."
-      />
-            <property
-        name="zIndex"
-        type="Integer"
-        label="Z-Index"
-        description="Z-Index for the component - required for the custom hovers to work"
-      />
+            <property name="primaryRelationshipField"
+						type="String"
+        				label="Primary Relationship Field Name"
+        				description="Field Name(s) which should be pre-populated with this recordId when clicking on the New button." />
+            <property name="zIndex"
+        				type="Integer"
+        				label="Z-Index"
+        				description="Z-Index for the component - required for the custom hovers to work" />
+
             <supportedFormFactors>
                 <supportedFormFactor type="Large" />
             </supportedFormFactors>

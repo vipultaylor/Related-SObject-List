@@ -1,141 +1,128 @@
-<template>
-  <template lwc:if={recordIdForPopover}>
-    <c-sobject-compact-layout-on-hover
-      record-id={recordIdForPopover}
-      container-bounding-box-left={containerBoundingBoxLeft}
-      container-bounding-box-right={containerBoundingBoxRight}
-      onpopoverstatechange={handlePopoverStateChange}
-    ></c-sobject-compact-layout-on-hover>
-  </template>
-  <div class="slds-truncate">
-    <template lwc:if={field.properties.isBoolean}>
-      <template lwc:if={field.value}>
-        <lightning-input type="checkbox" checked disabled></lightning-input>
-      </template>
-      <template lwc:else>
-        <lightning-input type="checkbox" disabled></lightning-input>
-      </template>
+<template> 
+    <template lwc:if={recordIdForPopover}>
+        <c-sobject-compact-layout-on-hover record-id={recordIdForPopover} 
+            container-bounding-box-left={containerBoundingBoxLeft} 
+            container-bounding-box-right={containerBoundingBoxRight}
+            onpopoverstatechange={handlePopoverStateChange}></c-sobject-compact-layout-on-hover>
     </template>
-    <template lwc:elseif={field.properties.isCurrency}>
-      <lightning-formatted-number
-        value={field.value}
-        format-style="currency"
-        currency-code={field.currencyIsoCode}
-        currency-display-as="code"
-        maximum-fraction-digits={field.properties.scale}
-      ></lightning-formatted-number>
-    </template>
-    <template lwc:elseif={field.properties.isDate}>
-      <template lwc:if={field.value}>
-        <lightning-formatted-date-time
-          value={field.value}
-        ></lightning-formatted-date-time>
-      </template>
-    </template>
-    <template lwc:elseif={field.properties.isDateTime}>
-      <template lwc:if={field.value}>
-        <lightning-formatted-date-time
-          value={field.value}
-        ></lightning-formatted-date-time>
-      </template>
-    </template>
-    <template lwc:elseif={field.properties.isEmail}>
-      <lightning-formatted-text
-        value={field.value}
-        linkify="true"
-      ></lightning-formatted-text>
-    </template>
-    <template lwc:elseif={field.properties.isName}>
-      <div class="forceOutputLookupWithPreview">
-        <template lwc:if={field.properties.isHoverable}>
-          <a
-            id="nameFieldLink"
-            class="slds-truncate textUnderline"
-            data-recordid={field.recordId}
-            tabindex="0"
-            onclick={navigateToRecordViewPage}
-            onfocus={showPopover}
-            onblur={hidePopover}
-            onmouseover={showPopover}
-            onmouseout={hidePopover}
-            target="_self"
-            aria-haspopup="false"
-          >
-            {field.value}
-          </a>
+    <div class="slds-truncate">
+        <!-- BOOLEAN -->
+        <template lwc:if={field.properties.isBoolean}>
+            <template lwc:if={field.value}>
+                <lightning-input type="checkbox" checked disabled></lightning-input>
+            </template>
+            <template lwc:else>
+                <lightning-input type="checkbox" disabled></lightning-input>
+            </template>
         </template>
-        <template lwc:else>
-          <a
-            class="slds-truncate textUnderline"
-            data-recordid={field.recordId}
-            onclick={navigateToRecordViewPage}
-            target="_self"
-          >
-            {field.value}
-          </a>
+
+        <!-- CURRENCY -->
+        <template lwc:elseif={field.properties.isCurrency}>
+            <lightning-formatted-number value={field.value} format-style="currency" currency-code={field.currencyIsoCode} currency-display-as="code" maximum-fraction-digits={field.properties.scale}></lightning-formatted-number>
         </template>
-      </div>
-    </template>
-    <template lwc:elseif={field.properties.isNumber}>
-      <lightning-formatted-number
-        value={field.value}
-        maximum-fraction-digits={field.properties.scale}
-      ></lightning-formatted-number>
-    </template>
-    <template lwc:elseif={field.properties.isPercent}>
-      <lightning-formatted-number
-        value={field.value}
-        maximum-fraction-digits={field.properties.scale}
-      ></lightning-formatted-number>
-      %
-    </template>
-    <template lwc:elseif={field.properties.isReference}>
-      <template lwc:if={field.properties.isNavigatable}>
-        <div class="forceOutputLookupWithPreview">
-          <a
-            class="slds-truncate textUnderline"
-            data-recordid={field.recordId}
-            tabindex="0"
-            onclick={navigateToRecordViewPage}
-            onfocus={showPopover}
-            onblur={hidePopover}
-            onmouseover={showPopover}
-            onmouseout={hidePopover}
-            target="_self"
-            aria-haspopup="false"
-          >
-            {field.value}
-          </a>
-        </div>
-      </template>
-      <template lwc:else>
-        <lightning-formatted-text
-          value={field.value}
-        ></lightning-formatted-text>
-      </template>
-    </template>
-    <template lwc:elseif={field.properties.isText}>
-      <lightning-formatted-text value={field.value}></lightning-formatted-text>
-    </template>
-    <template lwc:elseif={field.properties.isTextArea}>
-      <template lwc:if={allowTextWrapping}>
-        <div class="allow-wrap">
-          <lightning-formatted-text
-            value={field.value}
-          ></lightning-formatted-text>
-        </div>
-      </template>
-      <template lwc:else>
-        <lightning-formatted-text
-          value={field.value}
-        ></lightning-formatted-text>
-      </template>
-    </template>
-    <template lwc:elseif={field.properties.isURL}>
-      <lightning-formatted-text
-        value={field.value}
-        linkify="true"
-      ></lightning-formatted-text>
-    </template>
-  </div>
+
+        <!-- DATE -->
+        <template lwc:elseif={field.properties.isDate}>
+            <template lwc:if={field.value}>
+                <lightning-formatted-date-time value={field.value}></lightning-formatted-date-time>
+            </template>
+        </template>
+
+        <!-- DATE/TIME -->
+        <template lwc:elseif={field.properties.isDateTime}>
+            <template lwc:if={field.value}>
+                <lightning-formatted-date-time value={field.value}></lightning-formatted-date-time>
+            </template>
+        </template>
+
+        <!-- EMAIL -->
+        <template lwc:elseif={field.properties.isEmail}>
+            <lightning-formatted-text value={field.value} linkify="true"></lightning-formatted-text>
+        </template>
+
+        <!-- NAME -->
+        <template lwc:elseif={field.properties.isName}>
+            <div class="forceOutputLookupWithPreview">
+                <template lwc:if={field.properties.isHoverable}>
+                    <a id="nameFieldLink" class="slds-truncate textUnderline" data-recordid={field.recordId} tabindex="0" onclick={navigateToRecordViewPage} onfocus={showPopover} onblur={hidePopover} onmouseover={showPopover} onmouseout={hidePopover} target="_self" aria-haspopup="false">
+                        {field.value}
+                    </a>
+                </template>
+                <template lwc:else>
+                    <a class="slds-truncate textUnderline" data-recordid={field.recordId} onclick={navigateToRecordViewPage} target="_self" >
+                        {field.value}
+                    </a>
+                </template>
+            </div>
+        </template>
+
+        <!-- NUMBER -->
+        <template lwc:elseif={field.properties.isNumber}>
+            <lightning-formatted-number value={field.value} maximum-fraction-digits={field.properties.scale}></lightning-formatted-number>
+        </template>
+
+        <!-- PERCENT -->
+        <template lwc:elseif={field.properties.isPercent}>
+            <lightning-formatted-number value={field.value} maximum-fraction-digits={field.properties.scale}></lightning-formatted-number> %
+        </template>
+
+        <!-- REFERENCE -->
+        <template lwc:elseif={field.properties.isReference}>
+            <template lwc:if={field.properties.isNavigatable}>
+                <div class="forceOutputLookupWithPreview">
+                    <template lwc:if={field.properties.isHoverable}>
+                        <a class="slds-truncate textUnderline" data-recordid={field.recordId} tabindex="0" onclick={navigateToRecordViewPage} onfocus={showPopover} onblur={hidePopover} onmouseover={showPopover} onmouseout={hidePopover} target="_self" aria-haspopup="false">
+                            {field.value}
+                        </a>
+                    </template>
+                    <template lwc:else>
+                        <a class="slds-truncate textUnderline" data-recordid={field.recordId} onclick={navigateToRecordViewPage} target="_self" >
+                            {field.value}
+                        </a>
+                    </template>
+                </div>
+            </template>
+            <template lwc:else>
+                <lightning-formatted-text value={field.value}></lightning-formatted-text>
+            </template>
+        </template>
+
+        <!-- TEXT -->
+        <template lwc:elseif={field.properties.isText}>
+            <template lwc:if={field.properties.isNavigatable}>
+                <div class="forceOutputLookupWithPreview">
+                    <template lwc:if={field.properties.isHoverable}>
+                        <a class="slds-truncate textUnderline" data-recordid={field.recordId} tabindex="0" onclick={navigateToRecordViewPage} onfocus={showPopover} onblur={hidePopover} onmouseover={showPopover} onmouseout={hidePopover} target="_self" aria-haspopup="false">
+                            {field.value}
+                        </a>
+                    </template>
+                    <template lwc:else>
+                        <a class="slds-truncate textUnderline" data-recordid={field.recordId} onclick={navigateToRecordViewPage} target="_self" >
+                            {field.value}
+                        </a>
+                    </template>
+                </div>
+            </template>
+            <template lwc:else>
+                <lightning-formatted-text value={field.value}></lightning-formatted-text>
+            </template>
+        </template>
+
+        <!-- TEXT AREA -->
+        <template lwc:elseif={field.properties.isTextArea}>
+            <template lwc:if={allowTextWrapping}>
+                <div class="allow-wrap">
+                    <lightning-formatted-text value={field.value}></lightning-formatted-text>
+                </div>
+            </template>
+            <template lwc:else>
+                <lightning-formatted-text value={field.value}></lightning-formatted-text>
+            </template>
+        </template>
+
+        <!-- URL -->
+        <template lwc:elseif={field.properties.isURL}>
+            <lightning-formatted-text value={field.value} linkify="true"></lightning-formatted-text>
+        </template>
+    </div>
 </template>
