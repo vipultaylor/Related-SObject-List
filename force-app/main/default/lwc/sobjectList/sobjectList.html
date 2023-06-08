@@ -4,7 +4,7 @@
 			<article class="slds-card slds-card_boundary forceBaseCard forceRelatedListCardDesktop custom-sobject-list-container">
 				<!-- Header -->
 				<template lwc:if={showHeader}>
-					<div class="slds-card__header slds-grid">
+					<div class="slds-card__header slds-grid slds-page-header">
 						<header class="slds-media slds-media_center slds-has-flexi-truncate">
 							<div class="slds-media__figure">
 								<lightning-icon icon-name={iconName} size={iconSize}></lightning-icon>
@@ -40,7 +40,7 @@
 							<div class="slds-no-flex">
 								<lightning-layout>
 									<lightning-layout-item padding="horizontal-small">
-										<lightning-button-icon icon-name="utility:refresh" alternative-text="Refresh" title="Refresh" onclick={refreshData}></lightning-button-icon>
+										<lightning-button-icon icon-name="utility:refresh" alternative-text="Refresh" title="Refresh" variant="border-filled" onclick={refreshData}></lightning-button-icon>
 									</lightning-layout-item>
 									<lightning-layout-item>
 										<template lwc:if={showNewButton}>

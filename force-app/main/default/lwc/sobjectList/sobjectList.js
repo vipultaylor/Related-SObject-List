@@ -45,7 +45,7 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
 
 	@api primaryRelationshipField = "";
 	@api viewAll = false;
-	@api zIndex = 100;
+	@api zIndex = 0;
 
 	@track isLoaded = false;
 	@track isRefreshing = false;
