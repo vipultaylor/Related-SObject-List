@@ -25,6 +25,9 @@ public with sharing class SObjectService {
 
   //Create a map of objects where 'Name' is not the right identifier
   private final static Map<String, String> MAP_OBJECT_IDENTIFIERS = new Map<String, String>{
+    'Case' => 'CaseNumber',
+    'Order' => 'OrderNumber',
+    'ServiceAppointment' => 'AppointmentNumber',
     'WorkOrder' => 'WorkOrderNumber'
   };
 
