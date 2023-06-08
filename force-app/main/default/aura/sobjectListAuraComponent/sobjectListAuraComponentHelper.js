@@ -4,17 +4,18 @@
     	var workspaceAPI = component.find("workspace");
 
         //Get data from Page Reference
-        let pageRef = component.get('v.pageReference');
-        let tabTitle = pageRef.state.c__title;
-        let iconName = pageRef.state.c__iconName;
+        var pageRef = component.get('v.pageReference');
+        var tabTitle = pageRef.state.c__title;
+        var iconName = pageRef.state.c__iconName;
         
         //Assigning the data back to an attribute
         component.set('v.recordId', pageRef.state.c__recordId);
         component.set('v.sObjectName', pageRef.state.c__sObjectName);
         component.set('v.commaSeparatedRecordtypes', pageRef.state.c__commaSeparatedRecordtypes);
         component.set('v.fieldSetForColumns', pageRef.state.c__fieldSetForColumns);
-        component.set('v.idField', pageRef.state.c__idField);
         component.set('v.relationshipFieldNames', pageRef.state.c__relationshipFieldNames);
+        component.set('v.hyperlinkFieldNames', pageRef.state.c__hyperlinkFieldNames);
+        component.set('v.idField', pageRef.state.c__idField);
         component.set('v.condition', pageRef.state.c__condition);
         component.set('v.limitCount', pageRef.state.c__limitCount);
         component.set('v.sortStatement', pageRef.state.c__sortStatement);

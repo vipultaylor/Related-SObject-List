@@ -1,55 +1,57 @@
 <aura:component implements="lightning:isUrlAddressable">
-  <aura:attribute name="recordId" type="String" />
-  <aura:attribute name="sObjectName" type="String" />
-  <aura:attribute name="commaSeparatedRecordtypes" type="String" />
-  <aura:attribute name="fieldSetForColumns" type="String" />
-  <aura:attribute name="relationshipFieldNames" type="String" />
-  <aura:attribute name="hyperlinkFieldNames" type="String" />
-  <aura:attribute name="idField" type="String" />
-  <aura:attribute name="condition" type="String" />
-  <aura:attribute name="limitCount" type="Integer" />
-  <aura:attribute name="sortStatement" type="String" />
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="sObjectName" type="String"/>
+    <aura:attribute name="commaSeparatedRecordtypes" type="String"/>
+    <aura:attribute name="fieldSetForColumns" type="String"/>
+    <aura:attribute name="relationshipFieldNames" type="String"/>
+    <aura:attribute name="hyperlinkFieldNames" type="String"/>
+    <aura:attribute name="idField" type="String"/>
+    <aura:attribute name="condition" type="String"/>
+    <aura:attribute name="limitCount" type="Integer"/>
+    <aura:attribute name="sortStatement" type="String"/>
 
-  <aura:attribute name="title" type="String" />
-  <aura:attribute name="iconName" type="String" />
-  <aura:attribute name="iconSize" type="String" />
-  <aura:attribute name="displayType" type="String" />
+    <aura:attribute name="title" type="String"/>
+    <aura:attribute name="iconName" type="String"/>
+    <aura:attribute name="iconSize" type="String"/>
+    <aura:attribute name="displayType" type="String"/>
 
-  <aura:attribute name="showHeader" type="Boolean" />
-  <aura:attribute name="showNewButton" type="Boolean" />
-  <aura:attribute name="isHoverable" type="Boolean" />
-  <aura:attribute name="allowTextWrapping" type="Boolean" />
+    <aura:attribute name="showHeader" type="Boolean"/>
+    <aura:attribute name="showNewButton" type="Boolean"/>
+    <aura:attribute name="isHoverable" type="Boolean"/>
+    <aura:attribute name="allowTextWrapping" type="Boolean"/>
 
-  <aura:attribute name="primaryRelationshipField" type="String" />
-  <aura:attribute name="viewAll" type="Boolean" />
+    <aura:attribute name="primaryRelationshipField" type="String"/>
+    <aura:attribute name="viewAll" type="Boolean"/>
+    
+    <!-- Lightning Workspace API -->
+    <lightning:workspaceAPI aura:id="workspace" />
+    
+    <!-- INIT Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+    
+    <!-- LWC Component -->
+    <c:sobjectList recordId="{!v.recordId}"
+                   sObjectName="{!v.sObjectName}"
+                   commaSeparatedRecordtypes="{!v.commaSeparatedRecordtypes}"
+                   fieldSetForColumns="{!v.fieldSetForColumns}"
+                   relationshipFieldNames="{!v.relationshipFieldNames}"
+                   hyperlinkFieldNames="{!v.hyperlinkFieldNames}"
+                   idField="{!v.idField}"
+                   condition="{!v.condition}"
+                   limitCount="{!v.limitCount}"
+                   sortStatement="{!v.sortStatement}"
+                   
+                   title="{!v.title}"
+                   iconName="{!v.iconName}"
+                   iconSize="{!v.iconSize}"
+                   displayType="{!v.displayType}"
+                   
+                   showHeader="{!v.showHeader}"
+                   showNewButton="{!v.showNewButton}"
+                   isHoverable="{!v.isHoverable}"
+                   allowTextWrapping="{!v.allowTextWrapping}"
 
-  <!-- Lightning Workspace API -->
-  <lightning:workspaceAPI aura:id="workspace" />
+                   primaryRelationshipField="{!v.primaryRelationshipField}"
+                   viewAll="{!v.viewAll}" />
 
-  <!-- INIT Handler -->
-  <aura:handler name="init" value="{!this}" action="{!c.init}" />
-
-  <!-- LWC Component -->
-  <c:sobjectList
-    recordId="{!v.recordId}"
-    sObjectName="{!v.sObjectName}"
-    commaSeparatedRecordtypes="{!v.commaSeparatedRecordtypes}"
-    fieldSetForColumns="{!v.fieldSetForColumns}"
-    relationshipFieldNames="{!v.relationshipFieldNames}"
-    hyperlinkFieldNames="{!v.hyperlinkFieldNames}"
-    idField="{!v.idField}"
-    condition="{!v.condition}"
-    limitCount="{!v.limitCount}"
-    sortStatement="{!v.sortStatement}"
-    title="{!v.title}"
-    iconName="{!v.iconName}"
-    iconSize="{!v.iconSize}"
-    displayType="{!v.displayType}"
-    showHeader="{!v.showHeader}"
-    showNewButton="{!v.showNewButton}"
-    isHoverable="{!v.isHoverable}"
-    allowTextWrapping="{!v.allowTextWrapping}"
-    primaryRelationshipField="{!v.primaryRelationshipField}"
-    viewAll="{!v.viewAll}"
-  />
 </aura:component>
