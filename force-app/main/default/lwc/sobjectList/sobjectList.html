@@ -1,171 +1,373 @@
 <template>
-    <template if:true={isLoaded}>
-        <template if:true={responseWrapper.permissions.accessible}>
-            <article class="slds-card slds-card_boundary forceBaseCard forceRelatedListCardDesktop custom-sobject-list-container">
-                <!-- Header -->
-                <div class="slds-card__header slds-grid">
-                    <header class="slds-media slds-media_center slds-has-flexi-truncate">
-                        <div class="slds-media__figure">
-                            <lightning-icon icon-name={iconName} size={iconSize}></lightning-icon>
-                        </div>
-                        <div class="slds-media__body">
-                            <!-- BREADCRUMBS -->
-                            <template if:true={viewAll}>
-                                <nav role="navigation" aria-label="Breadcrumbs">
-                                    <ol class="slds-breadcrumb slds-list_horizontal slds-wrap">
-                                        <li class="slds-breadcrumb__item">
-                                            <a href={breadcrumbSobjectListURL}>{responseWrapper.parentSObj.labelPlural}</a>
-                                        </li>
-                                        <li class="slds-breadcrumb__item">
-                                            <a href={breadcrumbSobjectURL}>{responseWrapper.parentSObj.recordName}</a>
-                                        </li>
-                                    </ol>
-                                </nav>
-                            </template>
-                            <!-- COMPONENT TITLE -->
-                            <h2 class="header-title-container">
-                                <template if:true={viewAll}>
-                                    <div class="slds-card__header-title slds-truncate">
-                                        {title} ({responseWrapper.sObj.displayCount})
-                                    </div>
-                                </template>
-                                <template if:false={viewAll}>
-                                    <a class="slds-card__header-title slds-card__header-link" onclick={navigateToViewAll}>
-                                        <span class="slds-truncate">
-                                            {title} ({responseWrapper.sObj.displayCount})
-                                        </span>
-                                    </a>
-                                </template>
-                            </h2>
-                        </div> 
-                        <div class="slds-no-flex">
-                            <lightning-layout>
-                                <lightning-layout-item padding="horizontal-small">
-                                    <lightning-button-icon icon-name="utility:refresh" alternative-text="Refresh" title="Refresh" onclick={refreshData}></lightning-button-icon>
-                                </lightning-layout-item>
-                                <lightning-layout-item>
-                                    <template if:true={showNewButton}>
-                                        <template if:true={responseWrapper.permissions.creatable}>
-                                            <lightning-button label="New" onclick={createRecord}></lightning-button>
-                                        </template>
-                                    </template>
-                                </lightning-layout-item>
-                            </lightning-layout>
-                        </div>
-                    </header>
-                </div>
-                <!-- Body -->
-                <div class="slds-card__body slds-card__body_inner">
-                    <div class="slds-grid--pull-padded">
-                        <template if:true={isRefreshing}>
-                            <div class="slds-card__body slds-card__body_inner">
-                                <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
-                            </div>
-                        </template>
-                        <template if:false={isRefreshing}>
-                            <template if:true={hasRecords}>
-                                <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-no-hover slds-table_fixed-layout">
-                                    <thead>
-                                        <tr class="slds-line-height_reset">
-                                            <template if:true={viewAll}>
-                                                <th style="width: 50px;"></th>
-                                            </template>
-                                            <template for:each={responseWrapper.fields} for:item="field">
-                                                <th key={field.name} class="slds-text-heading--label" scope="col">
-                                                    <div class="slds-truncate" >{field.label}</div>
-                                                </th>
-                                            </template>
-                                            <!-- Action Menu -->
-                                            <th style="width: 50px;"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <template for:each={responseWrapper.sObj.records} for:item="record">
-                                            <tr key={record.Id} class="slds-no-hover">
-                                                <template if:true={viewAll}>
-                                                    <td class="slds-text-align_center">{record.index}</td>
-                                                </template>
-                                                <template for:each={record.fields} for:item="recordField">
-                                                    <td data-label={recordField.fieldDescribe.label} key={recordField.key}>
-                                                        <c-custom-output-field field-describe={recordField.fieldDescribe} 
-                                                                                field-value={recordField.value} 
-                                                                                record-id={recordField.recordId}
-                                                                                is-navigatable={recordField.isNavigatable}
-                                                                                is-hoverable="true"></c-custom-output-field>
-                                                    </td>
-                                                </template>
-                                                <td>
-                                                    <lightning-button-menu icon-size="x-small" menu-alignment="auto" alternative-text="Show menu">
-                                                        <template if:true={responseWrapper.permissions.updatable}>
-                                                            <lightning-menu-item value={record.Id} label="Edit" onclick={editRecord}></lightning-menu-item>
-                                                        </template>
-                                                        <template if:true={responseWrapper.permissions.deletable}>
-                                                            <lightning-menu-item value={record.Id} label="Delete" onclick={deleteRecord}></lightning-menu-item>
-                                                        </template>
-                                                    </lightning-button-menu>
-                                                </td>
-                                            </tr>
-                                        </template>
-                                    </tbody>
-                                </table>
-                            </template>
-                        </template>
-                    </div>
-                </div>
-            
-                <!-- Footer -->
-                <template if:false={isRefreshing}>
-                    <template if:true={hasRecords}>
-                        <template if:false={viewAll}>
-                            <div class="slds-card__footer">
-                                <a onclick={navigateToViewAll}>{buttonViewAll}</a>
-                            </div>
-                        </template>
-                    </template>
+  <template lwc:if={isLoaded}>
+    <template lwc:if={responseWrapper.permissions.accessible}>
+      <article
+        class="slds-card slds-card_boundary forceBaseCard forceRelatedListCardDesktop custom-sobject-list-container"
+      >
+        <!-- Header -->
+        <template lwc:if={showHeader}>
+          <div class="slds-card__header slds-grid">
+            <header
+              class="slds-media slds-media_center slds-has-flexi-truncate"
+            >
+              <div class="slds-media__figure">
+                <lightning-icon
+                  icon-name={iconName}
+                  size={iconSize}
+                ></lightning-icon>
+              </div>
+              <div class="slds-media__body">
+                <!-- BREADCRUMBS -->
+                <template lwc:if={viewAll}>
+                  <nav role="navigation" aria-label="Breadcrumbs">
+                    <ol class="slds-breadcrumb slds-list_horizontal slds-wrap">
+                      <li class="slds-breadcrumb__item">
+                        <a href={breadcrumbSobjectListURL}
+                          >{responseWrapper.parentSObj.labelPlural}</a
+                        >
+                      </li>
+                      <li class="slds-breadcrumb__item">
+                        <a href={breadcrumbSobjectURL}
+                          >{responseWrapper.parentSObj.recordName}</a
+                        >
+                      </li>
+                    </ol>
+                  </nav>
                 </template>
-            </article>
-
-            <!-- New Record Modal-->
-            <!--Use template if:true to display/hide popup based on isModalOpen value--> 
-            <template if:true={isModalOpen}>
-                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" class="slds-modal slds-fade-in-open">
-                    <div class="slds-modal__container">
-                        <div class="slds-modal__header">
-                            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" onclick={closeModal}>
-                                <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse" size="small" ></lightning-icon>
-                                <span class="slds-assistive-text">{buttonClose}</span>
-                            </button>
-                            <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">{modalHeader}</h1>
-                        </div>
-                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
-                            <!-- Modal Content for New Record -->
-                            <template if:true={isNewModal}>
-                                <lightning-radio-group name="recordtypeSelection"
-                                label={label.SOBject_Select_Recordtype}
-                                options={recordtypeOptions}
-                                type="radio"
-                                onchange={handleRecordtypeChange}></lightning-radio-group>
-                            </template>
-                            <!-- Modal Content for Delete Record -->
-                            <template if:true={isDeleteModal}>
-                                <div class="detail slds-text-align--center">{deleteConfirmationMessage}</div>
-                            </template>
-                        </div>
-                        <div class="slds-modal__footer">
-                            <button class="slds-button slds-button_neutral" onclick={closeModal}>{buttonCancel}</button>
-                            <!-- Action Button for New Record -->
-                            <template if:true={isNewModal}>
-                                <button class="slds-button slds-button_brand" onclick={navigateToNewRecordPage}>{buttonNext}</button>
-                            </template>
-                            <!-- Action Button for Delete Record -->
-                            <template if:true={isDeleteModal}>
-                                <button class="slds-button slds-button_brand" onclick={handleDelete}>{buttonDelete}</button>
-                            </template>
-                        </div>
+                <!-- COMPONENT TITLE -->
+                <h2 class="header-title-container">
+                  <template lwc:if={viewAll}>
+                    <div class="slds-card__header-title slds-truncate">
+                      {title} ({responseWrapper.sObj.displayCount})
                     </div>
-                </section>
-                <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
-            </template>
+                  </template>
+                  <template lwc:else>
+                    <a
+                      class="slds-card__header-title slds-card__header-link"
+                      onclick={navigateToViewAll}
+                    >
+                      <span class="slds-truncate">
+                        {title} ({responseWrapper.sObj.displayCount})
+                      </span>
+                    </a>
+                  </template>
+                </h2>
+              </div>
+              <div class="slds-no-flex">
+                <lightning-layout>
+                  <lightning-layout-item padding="horizontal-small">
+                    <lightning-button-icon
+                      icon-name="utility:refresh"
+                      alternative-text="Refresh"
+                      title="Refresh"
+                      onclick={refreshData}
+                    ></lightning-button-icon>
+                  </lightning-layout-item>
+                  <lightning-layout-item>
+                    <template lwc:if={showNewButton}>
+                      <template lwc:if={responseWrapper.permissions.creatable}>
+                        <lightning-button
+                          label="New"
+                          onclick={createRecord}
+                        ></lightning-button>
+                      </template>
+                    </template>
+                  </lightning-layout-item>
+                </lightning-layout>
+              </div>
+            </header>
+          </div>
         </template>
-    </template>   
+
+        <!-- Body -->
+        <div class="slds-card__body slds-card__body_inner">
+          <div class="slds-grid--pull-padded">
+            <template lwc:if={isRefreshing}>
+              <div class="slds-card__body slds-card__body_inner">
+                <lightning-spinner
+                  alternative-text="Loading"
+                  size="small"
+                ></lightning-spinner>
+              </div>
+            </template>
+            <template lwc:else>
+              <template lwc:if={hasRecords}>
+                <!-- BEGIN: LIST format-->
+                <template lwc:if={isListLayout}>
+                  <table
+                    class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-no-hover slds-table_fixed-layout"
+                  >
+                    <thead>
+                      <tr class="slds-line-height_reset">
+                        <template lwc:if={viewAll}>
+                          <th style="width: 50px"></th>
+                        </template>
+                        <template
+                          for:each={responseWrapper.fields}
+                          for:item="field"
+                        >
+                          <th
+                            key={field.name}
+                            class="slds-text-heading--label"
+                            scope="col"
+                          >
+                            <div class="slds-truncate">{field.label}</div>
+                          </th>
+                        </template>
+                        <!-- Action Menu -->
+                        <th style="width: 50px"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <template
+                        for:each={responseWrapper.sObj.records}
+                        for:item="record"
+                      >
+                        <tr key={record.Id} class="slds-no-hover">
+                          <template lwc:if={viewAll}>
+                            <td class="slds-text-align_center">
+                              {record.index}
+                            </td>
+                          </template>
+                          <template
+                            for:each={record.fields}
+                            for:item="recordField"
+                          >
+                            <td
+                              data-label={recordField.fieldDescribe.label}
+                              key={recordField.key}
+                            >
+                              <c-custom-output-field
+                                field-describe={recordField.fieldDescribe}
+                                field-value={recordField.value}
+                                record-id={recordField.recordId}
+                                is-navigatable={recordField.isNavigatable}
+                                is-hoverable={isHoverable}
+                                allow-text-wrapping={allowTextWrapping}
+                              ></c-custom-output-field>
+                            </td>
+                          </template>
+                          <td>
+                            <lightning-button-menu
+                              icon-size="x-small"
+                              menu-alignment="auto"
+                              alternative-text="Show menu"
+                            >
+                              <template
+                                lwc:if={responseWrapper.permissions.updatable}
+                              >
+                                <lightning-menu-item
+                                  value={record.Id}
+                                  label="Edit"
+                                  onclick={editRecord}
+                                ></lightning-menu-item>
+                              </template>
+                              <template
+                                lwc:if={responseWrapper.permissions.deletable}
+                              >
+                                <lightning-menu-item
+                                  value={record.Id}
+                                  label="Delete"
+                                  onclick={deleteRecord}
+                                ></lightning-menu-item>
+                              </template>
+                            </lightning-button-menu>
+                          </td>
+                        </tr>
+                      </template>
+                    </tbody>
+                  </table>
+                </template>
+                <!-- END: LIST format-->
+
+                <!-- BEGIN: TILES format-->
+                <template lwc:elseif={isTilesLayout}>
+                  <div class="slds-p-around_medium">
+                    <ul class="slds-has-dividers_bottom-space">
+                      <template
+                        for:each={responseWrapper.sObj.records}
+                        for:item="record"
+                        for:index="recordIndex"
+                      >
+                        <li key={record.Id} class="slds-item">
+                          <lightning-tile label="" class="slds-tile_board">
+                            <dl class="slds-list_horizontal slds-wrap">
+                              <template
+                                for:each={record.fields}
+                                for:item="recordField"
+                                for:index="fieldIndex"
+                              >
+                                <dt
+                                  key={recordField.key}
+                                  class="slds-item_label slds-text-color_weak slds-truncate"
+                                  title="First Label"
+                                >
+                                  {recordField.fieldDescribe.label}
+                                </dt>
+                                <dd
+                                  key={recordField.key}
+                                  class="slds-item_detail slds-truncate"
+                                  title="Description for first label"
+                                >
+                                  <c-custom-output-field
+                                    field-describe={recordField.fieldDescribe}
+                                    field-value={recordField.value}
+                                    record-id={recordField.recordId}
+                                    is-navigatable={recordField.isNavigatable}
+                                    is-hoverable={isHoverable}
+                                    allow-text-wrapping={allowTextWrapping}
+                                  ></c-custom-output-field>
+                                </dd>
+                              </template>
+                            </dl>
+                          </lightning-tile>
+                        </li>
+                      </template>
+                    </ul>
+                  </div>
+                </template>
+                <!-- END: TILES format-->
+
+                <!-- BEGIN: BOARD format-->
+                <template lwc:elseif={isBoardLayout}>
+                  <ul
+                    class="slds-has-dividers_around-space slds-m-horizontal_small"
+                  >
+                    <template
+                      for:each={responseWrapper.sObj.records}
+                      for:item="record"
+                      for:index="recordIndex"
+                    >
+                      <li key={record.Id} class="slds-item">
+                        <article class="slds-tile slds-tile_board">
+                          <div class="slds-tile__detail">
+                            <template
+                              for:each={record.fields}
+                              for:item="recordField"
+                              for:index="fieldIndex"
+                            >
+                              <c-custom-output-field
+                                key={recordField.key}
+                                field-describe={recordField.fieldDescribe}
+                                field-value={recordField.value}
+                                record-id={recordField.recordId}
+                                is-navigatable={recordField.isNavigatable}
+                                is-hoverable={isHoverable}
+                                allow-text-wrapping={allowTextWrapping}
+                              ></c-custom-output-field>
+                            </template>
+                          </div>
+                        </article>
+                      </li>
+                    </template>
+                  </ul>
+                </template>
+                <!-- END: BOARD format-->
+              </template>
+            </template>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <template lwc:if={isRefreshing}>
+          <!-- nothing -->
+        </template>
+        <template lwc:else>
+          <template lwc:if={hasRecords}>
+            <template lwc:if={viewAll}>
+              <!-- nothing -->
+            </template>
+            <template lwc:else>
+              <div class="slds-card__footer">
+                <a onclick={navigateToViewAll}>{buttonViewAll}</a>
+              </div>
+            </template>
+          </template>
+        </template>
+      </article>
+
+      <!-- New Record Modal-->
+      <!--Use template lwc:if to display/hide popup based on isModalOpen value-->
+      <template lwc:if={isModalOpen}>
+        <section
+          role="dialog"
+          tabindex="-1"
+          aria-labelledby="modal-heading-01"
+          aria-modal="true"
+          class="slds-modal slds-fade-in-open"
+        >
+          <div class="slds-modal__container">
+            <div class="slds-modal__header">
+              <button
+                class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                onclick={closeModal}
+              >
+                <lightning-icon
+                  icon-name="utility:close"
+                  alternative-text="close"
+                  variant="inverse"
+                  size="small"
+                ></lightning-icon>
+                <span class="slds-assistive-text">{buttonClose}</span>
+              </button>
+              <h1
+                id="modal-heading-01"
+                class="slds-modal__title slds-hyphenate"
+              >
+                {modalHeader}
+              </h1>
+            </div>
+            <div
+              class="slds-modal__content slds-p-around_medium"
+              id="modal-content-id-1"
+            >
+              <!-- Modal Content for New Record -->
+              <template lwc:if={isNewModal}>
+                <lightning-radio-group
+                  name="recordtypeSelection"
+                  label={LABEL.SOBject_Select_Recordtype}
+                  options={recordtypeOptions}
+                  type="radio"
+                  onchange={handleRecordtypeChange}
+                ></lightning-radio-group>
+              </template>
+              <!-- Modal Content for Delete Record -->
+              <template lwc:elseif={isDeleteModal}>
+                <div class="detail slds-text-align--center">
+                  {deleteConfirmationMessage}
+                </div>
+              </template>
+            </div>
+            <div class="slds-modal__footer">
+              <button
+                class="slds-button slds-button_neutral"
+                onclick={closeModal}
+              >
+                {buttonCancel}
+              </button>
+              <!-- Action Button for New Record -->
+              <template lwc:if={isNewModal}>
+                <button
+                  class="slds-button slds-button_brand"
+                  onclick={navigateToNewRecordPage}
+                >
+                  {buttonNext}
+                </button>
+              </template>
+              <!-- Action Button for Delete Record -->
+              <template lwc:elseif={isDeleteModal}>
+                <button
+                  class="slds-button slds-button_brand"
+                  onclick={handleDelete}
+                >
+                  {buttonDelete}
+                </button>
+              </template>
+            </div>
+          </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+      </template>
+    </template>
+  </template>
 </template>

@@ -4,25 +4,33 @@
     	var workspaceAPI = component.find("workspace");
 
         //Get data from Page Reference
-        let ref = component.get('v.pageReference');
-        let tabTitle = ref.state.c__title;
-        let iconName = ref.state.c__iconName;
+        let pageRef = component.get('v.pageReference');
+        let tabTitle = pageRef.state.c__title;
+        let iconName = pageRef.state.c__iconName;
         
         //Assigning the data back to an attribute
-        component.set('v.recordId', ref.state.c__recordId);
-        component.set('v.title', ref.state.c__title);
-        component.set('v.iconName', ref.state.c__iconName);
-        component.set('v.iconSize', ref.state.c__iconSize);
-        component.set('v.sObjectName', ref.state.c__sObjectName);
-        component.set('v.commaSeparatedRecordtypes', ref.state.c__commaSeparatedRecordtypes);
-        component.set('v.fieldSetForColumns', ref.state.c__fieldSetForColumns);
-        component.set('v.relationshipFieldNames', ref.state.c__relationshipFieldNames);
-        component.set('v.condition', ref.state.c__condition);
-        component.set('v.limitCount', ref.state.c__limitCount);
-        component.set('v.sortStatement', ref.state.c__sortStatement);
-        component.set('v.showNewButton', ref.state.c__showNewButton);
-        component.set('v.primaryRelationshipField', ref.state.c__primaryRelationshipField);
-        component.set('v.viewAll', ref.state.c__viewAll);
+        component.set('v.recordId', pageRef.state.c__recordId);
+        component.set('v.sObjectName', pageRef.state.c__sObjectName);
+        component.set('v.commaSeparatedRecordtypes', pageRef.state.c__commaSeparatedRecordtypes);
+        component.set('v.fieldSetForColumns', pageRef.state.c__fieldSetForColumns);
+        component.set('v.idField', pageRef.state.c__idField);
+        component.set('v.relationshipFieldNames', pageRef.state.c__relationshipFieldNames);
+        component.set('v.condition', pageRef.state.c__condition);
+        component.set('v.limitCount', pageRef.state.c__limitCount);
+        component.set('v.sortStatement', pageRef.state.c__sortStatement);
+
+        component.set('v.title', pageRef.state.c__title);
+        component.set('v.iconName', pageRef.state.c__iconName);
+        component.set('v.iconSize', pageRef.state.c__iconSize);
+        component.set('v.displayType', pageRef.state.c__displayType);
+
+        component.set('v.showHeader', pageRef.state.c__showHeader);
+        component.set('v.showNewButton', pageRef.state.c__showNewButton);
+        component.set('v.isHoverable', pageRef.state.c__isHoverable);
+        component.set('v.allowTextWrapping', pageRef.state.c__allowTextWrapping);
+
+        component.set('v.primaryRelationshipField', pageRef.state.c__primaryRelationshipField);
+        component.set('v.viewAll', pageRef.state.c__viewAll);
         
 		//Set the console tab properties
         workspaceAPI
@@ -32,7 +40,6 @@
           			//in a console app - get the current focused tab
           			workspaceAPI.getFocusedTabInfo()
                         .then(function(response) {
-                            console.log(JSON.parse(JSON.stringify(response)));
                             var tabId = '';
 
                             //Check to make sure that you are changing the tab title for the right tab
@@ -67,12 +74,12 @@
                             });
                         })
                         .catch(function(error) {
-                            console.log(JSON.parse(JSON.stringify(error)));
+                            console.error(JSON.parse(JSON.stringify(error)));
                         });
                 }
       		})
 			.catch(function(error) {
-				console.log(error);
+				console.error(error);
 			});
 	}
 })
