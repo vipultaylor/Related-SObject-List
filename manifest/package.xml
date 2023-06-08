@@ -1,12 +1,15 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
         <members>SObjectListController</members>
         <members>SObjectListControllerTest</members>
+        <members>SObjectListDisplayTypePicklist</members>
+        <members>SObjectListDisplayTypePicklistTest</members>
         <members>SObjectRequestWrapper</members>
         <members>SObjectResponseWrapper</members>
         <members>SObjectService</members>
         <members>Utils</members>
+        <members>UtilsTest</members>
         <name>ApexClass</name>
     </types>
     <types>
