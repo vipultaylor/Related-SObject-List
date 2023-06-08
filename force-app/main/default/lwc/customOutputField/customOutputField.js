@@ -103,7 +103,6 @@ export default class CustomOutputField extends NavigationMixin(LightningElement)
 
     navigateToRecordViewPage(event) {
         var recordId = event.currentTarget.getAttribute('data-recordid');
-		console.log('recordId: ' + recordId);
 
         if(recordId){
             // View a custom object record.

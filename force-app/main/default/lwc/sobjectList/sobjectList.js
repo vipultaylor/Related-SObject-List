@@ -399,8 +399,6 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
 				this.responseWrapper.permissions = result.permissions;
 
 				this._setRecordCounts(result.sObj.fullCountOfSObjects);
-
-				console.log(JSON.parse(JSON.stringify(this.responseWrapper)));
 			})
 			.catch((error) => {
 				this._handleError(error);
