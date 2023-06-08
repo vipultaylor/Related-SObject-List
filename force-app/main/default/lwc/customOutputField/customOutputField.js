@@ -117,7 +117,8 @@ export default class CustomOutputField extends NavigationMixin(LightningElement)
     }
 
     handlePopoverStateChange(event){
-        this.isPopoverActive = event.detail.value;
+        console.log(event.type, JSON.parse(JSON.stringify(event.detail)));
+        this.isPopoverActive = event.detail.state === 'active';
     }
 
     showPopover(event){

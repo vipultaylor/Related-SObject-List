@@ -2,6 +2,15 @@ import { api, wire, LightningElement, track} from 'lwc';
 import { getRecordUi } from 'lightning/uiRecordApi';
 
 const NUBBIN_PADDING = 20;
+const STATE = {
+    LOADED: 'loaded',
+    ACTIVE: 'active',
+    CLOSED: 'closed'
+};
+
+const EVENT = {
+    STATECHANGE: 'statechange'
+};
 
 export default class SobjectCompactLayoutOnHover extends LightningElement {
     @api recordId;
@@ -68,6 +77,7 @@ export default class SobjectCompactLayoutOnHover extends LightningElement {
             });
 
             this.isLoaded = true;
+            this._dispatchEvent(EVENT.STATECHANGE, STATE.LOADED);
         }
     }
 
@@ -96,7 +106,7 @@ export default class SobjectCompactLayoutOnHover extends LightningElement {
     keepPopoverActive(){
         if(!this.isPopoverActive){
             this.isPopoverActive = true;
-            this._dispatchEvent('popoverstatechange');
+            this._dispatchEvent(EVENT.STATECHANGE, STATE.ACTIVE);
         }
     }
 
@@ -106,16 +116,16 @@ export default class SobjectCompactLayoutOnHover extends LightningElement {
             this.isPopoverActive = false;
             this.isLoaded = false;
             this.recordId = null;
-            this._dispatchEvent('popoverstatechange');
+            this._dispatchEvent(EVENT.STATECHANGE, STATE.CLOSED);
         }, 150);
     }
 
-    _dispatchEvent(eventName){
+    _dispatchEvent(eventName, stateName){
         //create custom event
         const popoverEvent = new CustomEvent(eventName, {
             detail: {
                 recordId: this.recordId,
-                value: this.isPopoverActive
+                state: stateName
             }
         });
 
