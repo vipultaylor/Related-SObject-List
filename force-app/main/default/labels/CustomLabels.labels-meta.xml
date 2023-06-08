@@ -65,6 +65,14 @@
     >Please provide fieldset developername for displaying columns for object {0}</value>
     </labels>
     <labels>
+        <fullName>Error_Invalid_Parent_Identifier_Field</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription
+    >Error Invalid Parent Identifier Field</shortDescription>
+        <value>Invalid Parent Identifier Field</value>
+    </labels>
+    <labels>
         <fullName>Error_Invalid_SObject_Name</fullName>
         <language>en_US</language>
         <protected>true</protected>

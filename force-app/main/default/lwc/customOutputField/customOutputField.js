@@ -7,8 +7,9 @@ export default class CustomOutputField extends NavigationMixin(
   @api fieldDescribe;
   @api fieldValue;
   @api recordId;
-  @api isNavigatable = false;
   @api currencyIsoCode;
+
+  @api isNavigatable = false;
   @api isHoverable = false;
   @api allowTextWrapping = false;
 
@@ -35,6 +36,12 @@ export default class CustomOutputField extends NavigationMixin(
   };
 
   connectedCallback() {
+    this.fieldObj.properties.isHoverable = this.isHoverable;
+    this.fieldObj.properties.isNavigatable = this.isNavigatable;
+    this.fieldObj.recordId = this.recordId;
+    this.fieldObj.value = this.fieldValue;
+    this.fieldObj.currencyIsoCode = this.currencyIsoCode;
+
     switch (this.fieldDescribe.type) {
       case "boolean":
         this.fieldObj.properties.isBoolean = true;
@@ -63,8 +70,6 @@ export default class CustomOutputField extends NavigationMixin(
       case "reference":
         this.fieldObj.properties.isReference = true;
         this.fieldObj.recordId = this.recordId;
-        this.fieldObj.properties.isNavigatable = this.isNavigatable;
-        this.fieldObj.properties.isHoverable = this.isHoverable;
         break;
       case "textarea":
         this.fieldObj.properties.isTextArea = true;
@@ -75,9 +80,6 @@ export default class CustomOutputField extends NavigationMixin(
       default:
         if (this.fieldDescribe.nameField) {
           this.fieldObj.properties.isName = true;
-          this.fieldObj.recordId = this.recordId;
-          this.fieldObj.properties.isHoverable = this.isHoverable;
-          //this.fieldObj.href = '/' + this.recordId;
         } else if (
           this.fieldValue != null &&
           this.fieldValue.endsWith("</a>")
@@ -98,9 +100,6 @@ export default class CustomOutputField extends NavigationMixin(
           this.fieldObj.properties.isText = true;
         }
     }
-
-    this.fieldObj.value = this.fieldValue;
-    this.fieldObj.currencyIsoCode = this.currencyIsoCode;
   }
 
   get field() {
@@ -109,6 +108,7 @@ export default class CustomOutputField extends NavigationMixin(
 
   navigateToRecordViewPage(event) {
     var recordId = event.currentTarget.getAttribute("data-recordid");
+    console.log("recordId: " + recordId);
 
     if (recordId) {
       // View a custom object record.

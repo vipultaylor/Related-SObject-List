@@ -1,6 +1,6 @@
 <template>
   <template lwc:if={isLoaded}>
-    <template lwc:if={responseWrapper.permissions.accessible}>
+    <template lwc:if={responseWrapper.displayComponent}>
       <article
         class="slds-card slds-card_boundary forceBaseCard forceRelatedListCardDesktop custom-sobject-list-container"
       >
@@ -46,9 +46,9 @@
                       class="slds-card__header-title slds-card__header-link"
                       onclick={navigateToViewAll}
                     >
-                      <span class="slds-truncate">
-                        {title} ({responseWrapper.sObj.displayCount})
-                      </span>
+                      <span class="slds-truncate"
+                        >{title} ({responseWrapper.sObj.displayCount})</span
+                      >
                     </a>
                   </template>
                 </h2>
@@ -199,15 +199,13 @@
                               >
                                 <dt
                                   key={recordField.key}
-                                  class="slds-item_label slds-text-color_weak slds-truncate"
-                                  title="First Label"
+                                  class="slds-dl_horizontal__label slds-text-color_weak slds-truncate slds-m-bottom_xx-small"
                                 >
                                   {recordField.fieldDescribe.label}
                                 </dt>
                                 <dd
                                   key={recordField.key}
-                                  class="slds-item_detail slds-truncate"
-                                  title="Description for first label"
+                                  class="slds-dl_horizontal__detail slds-tile__meta slds-truncate slds-m-bottom_xx-small"
                                 >
                                   <c-custom-output-field
                                     field-describe={recordField.fieldDescribe}
@@ -246,15 +244,21 @@
                               for:item="recordField"
                               for:index="fieldIndex"
                             >
-                              <c-custom-output-field
-                                key={recordField.key}
-                                field-describe={recordField.fieldDescribe}
-                                field-value={recordField.value}
-                                record-id={recordField.recordId}
-                                is-navigatable={recordField.isNavigatable}
-                                is-hoverable={isHoverable}
-                                allow-text-wrapping={allowTextWrapping}
-                              ></c-custom-output-field>
+                              <template lwc:if={recordField.value}>
+                                <div
+                                  key={recordField.key}
+                                  class="slds-m-bottom_xx-small"
+                                >
+                                  <c-custom-output-field
+                                    field-describe={recordField.fieldDescribe}
+                                    field-value={recordField.value}
+                                    record-id={recordField.recordId}
+                                    is-navigatable={recordField.isNavigatable}
+                                    is-hoverable={isHoverable}
+                                    allow-text-wrapping={allowTextWrapping}
+                                  ></c-custom-output-field>
+                                </div>
+                              </template>
                             </template>
                           </div>
                         </article>
@@ -297,6 +301,7 @@
           class="slds-modal slds-fade-in-open"
         >
           <div class="slds-modal__container">
+            <!-- Modal Header-->
             <div class="slds-modal__header">
               <button
                 class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
@@ -317,6 +322,7 @@
                 {modalHeader}
               </h1>
             </div>
+            <!-- Modal Body-->
             <div
               class="slds-modal__content slds-p-around_medium"
               id="modal-content-id-1"
@@ -338,6 +344,7 @@
                 </div>
               </template>
             </div>
+            <!-- Modal Footer-->
             <div class="slds-modal__footer">
               <button
                 class="slds-button slds-button_neutral"
@@ -366,6 +373,7 @@
             </div>
           </div>
         </section>
+
         <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
       </template>
     </template>

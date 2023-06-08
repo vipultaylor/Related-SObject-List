@@ -22,23 +22,27 @@ import getResponse from "@salesforce/apex/SObjectListController.getResponse";
 
 export default class SobjectList extends NavigationMixin(LightningElement) {
   @api recordId;
+  @api sObjectName = "";
+  @api commaSeparatedRecordtypes = "";
+  @api fieldSetForColumns = "";
+  @api relationshipFieldNames = "";
+  @api hyperlinkFieldNames = "";
+  @api idField = "Id";
+  @api condition = "";
+  @api limitCount = 6;
+  @api sortStatement = "CreatedDate DESC";
+
   @api title;
   @api iconName = "standard:app";
   @api iconSize = "small";
   @api displayType = "list";
-  @api sObjectName = "";
-  @api commaSeparatedRecordtypes = "";
-  @api fieldSetForColumns = "";
-  @api idField = "Id";
-  @api relationshipFieldNames = "";
-  @api condition = "";
-  @api limitCount = 6;
-  @api sortStatement = "CreatedDate DESC";
+
   @api showHeader;
-  @api showFieldLabels;
+  @api hideOnZeroRecords;
   @api showNewButton;
   @api isHoverable;
   @api allowTextWrapping;
+
   @api primaryRelationshipField = "";
   @api viewAll = false;
   @api zIndex = 100;
@@ -88,6 +92,18 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
         this.hasRendered = true;
       }
     }
+  }
+
+  get isListLayout() {
+    return this.displayType === "list";
+  }
+
+  get isTilesLayout() {
+    return this.displayType === "tiles";
+  }
+
+  get isBoardLayout() {
+    return this.displayType === "board";
   }
 
   get breadcrumbSobjectListURL() {
@@ -146,18 +162,6 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
       this.LABEL.Delete_SObject_Confirm,
       this.responseWrapper.sObj.label.toLowerCase()
     );
-  }
-
-  get isListLayout() {
-    return this.displayType === "list";
-  }
-
-  get isTilesLayout() {
-    return this.displayType === "tiles";
-  }
-
-  get isBoardLayout() {
-    return this.displayType === "board";
   }
 
   get recordtypeOptions() {
@@ -328,8 +332,9 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
         c__sObjectName: this.sObjectName,
         c__commaSeparatedRecordtypes: this.commaSeparatedRecordtypes,
         c__fieldSetForColumns: this.fieldSetForColumns,
-        c__idField: this.idField,
         c__relationshipFieldNames: this.relationshipFieldNames,
+        c__hyperlinkFieldNames: this.hyperlinkFieldNames,
+        c__idField: this.idField,
         c__condition: this.condition,
         c__limitCount: this.limitCount,
         c__sortStatement: this.sortStatement,
@@ -352,6 +357,7 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
 
   _resetResponsWrapper() {
     this.responseWrapper = undefined;
+
     this.responseWrapper = {
       sObj: {
         records: [],
@@ -368,7 +374,8 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
         creatable: false,
         updatable: false,
         deletable: false
-      }
+      },
+      displayComponent: false
     };
   }
 
@@ -401,8 +408,8 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
           commaSeparatedRecordtypes: this.commaSeparatedRecordtypes,
           fieldSetForColumns: this.fieldSetForColumns,
           additionalFields: this.additionalFields,
-          idField: this.idField,
           relationshipFieldNames: this.relationshipFieldNames,
+          idField: this.idField,
           condition: this.condition,
           limitCount: this.limitCount,
           sortStatement: this.sortStatement
@@ -410,12 +417,8 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
         viewAll: this.viewAll
       })
         .then((result) => {
-          console.log("raw result");
-          console.log(result);
           let fields = JSON.parse(result.fieldDescribeResults);
           let records = this._formatData(result.sObj.lstSObjects, fields);
-
-          this._setRecordCounts(result.sObj.fullCountOfSObjects);
 
           this.responseWrapper.fields = fields;
           this.responseWrapper.sObj.label = result.sObj.sObjectLabel;
@@ -426,7 +429,9 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
             result.sObj.availableRecordtypes;
           this.responseWrapper.parentSObj = result.parentSObj;
           this.responseWrapper.permissions = result.permissions;
-          console.log("this.responseWrapper");
+
+          this._setRecordCounts(result.sObj.fullCountOfSObjects);
+
           console.log(JSON.parse(JSON.stringify(this.responseWrapper)));
         })
         .catch((error) => {
@@ -443,7 +448,7 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
     var displayCountString = "0";
 
     if (recordCount > 0) {
-      this.hasRecords = true;
+      this._hasRecords(true);
 
       if (this.viewAll) {
         displayCountString = recordCount;
@@ -460,16 +465,29 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
         }
       }
     } else {
-      this.hasRecords = false;
+      this._hasRecords(false);
     }
 
     //Set the display count
     this.responseWrapper.sObj.displayCount = displayCountString;
   }
 
+  _hasRecords(hasRecords) {
+    this.hasRecords = hasRecords;
+    this.responseWrapper.displayComponent =
+      this.responseWrapper.permissions.accessible &&
+      (hasRecords || (!hasRecords && !this.hideOnZeroRecords));
+  }
+
   _formatData(data, fields) {
     var lstObjectsNotNavigatable = ["RecordType"];
     var records = [];
+
+    var hyperlinkFields = new Array();
+    if (this.hyperlinkFieldNames) {
+      hyperlinkFields = this.hyperlinkFieldNames.split(",");
+    }
+
     if (data) {
       data.forEach((record, recordIndex) => {
         var recordObj = {};
@@ -511,6 +529,14 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
                 }
               }
             }
+
+            //Change the record id and field value for reference fiekds
+            if (hyperlinkFields.indexOf(field.name) >= 0) {
+              //Add
+              recordObjField.recordId = record.Id;
+              recordObjField.isNavigatable = true;
+            }
+
             recordObj.fields.push(recordObjField);
           });
         }
@@ -525,6 +551,7 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
   _formatLabel(stringToFormat, ...formattingArguments) {
     if (typeof stringToFormat !== "string")
       throw new Error("'stringToFormat' must be a String");
+    // eslint-disable-next-line no-confusing-arrow
     return stringToFormat.replace(/{(\d+)}/gm, (match, index) =>
       formattingArguments[index] === undefined
         ? ""
@@ -540,6 +567,7 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
     } else if (typeof error.body.message === "string") {
       message = error.body.message;
     }
+
     this.dispatchEvent(
       new ShowToastEvent({
         message: message,

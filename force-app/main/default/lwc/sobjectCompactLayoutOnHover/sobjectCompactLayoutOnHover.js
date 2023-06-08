@@ -26,8 +26,6 @@ export default class SobjectCompactLayoutOnHover extends LightningElement {
     if (error) {
       this._handleError(error);
     } else if (data) {
-      //console.log(data);
-
       //Set the Object Api Name
       this.objectApiName = data.records[this.recordId].apiName;
 

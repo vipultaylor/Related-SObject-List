@@ -25,9 +25,6 @@ public with sharing class SObjectService {
 
   //Create a map of objects where 'Name' is not the right identifier
   private final static Map<String, String> MAP_OBJECT_IDENTIFIERS = new Map<String, String>{
-    'Case' => 'CaseNumber',
-    'Order' => 'OrderNumber',
-    'ServiceAppointment' => 'AppointmentNumber',
     'WorkOrder' => 'WorkOrderNumber'
   };
 
@@ -110,18 +107,25 @@ public with sharing class SObjectService {
 
           //get the parent id related identifier field
           Map<String, Schema.SObjectField> contextObjFieldMap = contextSobjDescribe.fields.getMap();
-          Schema.DescribeFieldResult dfr = contextObjFieldMap.get(
-              parentIdFieldName
-            )
-            .getDescribe();
-          String parentReferenceFieldIdentifierPath = getReferenceFieldIdentifierPath(
-            dfr
-          );
-          if (String.isNotBlank(parentReferenceFieldIdentifierPath)) {
-            lstContextQueryFields.add(parentReferenceFieldIdentifierPath);
-            parentIdentifierFieldName = parentReferenceFieldIdentifierPath;
+          if (contextObjFieldMap.containsKey(parentIdFieldName)) {
+            Schema.DescribeFieldResult dfr = contextObjFieldMap.get(
+                parentIdFieldName
+              )
+              .getDescribe();
+            String parentReferenceFieldIdentifierPath = getReferenceFieldIdentifierPath(
+              dfr
+            );
+            if (String.isNotBlank(parentReferenceFieldIdentifierPath)) {
+              lstContextQueryFields.add(parentReferenceFieldIdentifierPath);
+              parentIdentifierFieldName = parentReferenceFieldIdentifierPath;
+            }
+          } else {
+            throw new SObjectServiceException(
+              System.Label.Error_Invalid_Parent_Identifier_Field
+            );
           }
         }
+
         String query =
           'SELECT ' +
           String.join(lstContextQueryFields, ',') +
@@ -135,30 +139,36 @@ public with sharing class SObjectService {
 
         String parentRecordId = (String) lstRecordDetails[0]
           .get(parentIdFieldName);
-        String parentRecordIdentifier;
 
-        //Check if the Parent Identifier field name is a dot notation reference
-        if (parentIdentifierFieldName.contains('.')) {
-          SObject parentRecordInstance = lstRecordDetails[0]
-            .getSObject(parentIdentifierFieldName.subStringBefore('.'));
-          parentRecordIdentifier = (String) parentRecordInstance.get(
-            parentIdentifierFieldName.subStringAfter('.')
-          );
-        } else {
-          parentRecordIdentifier = (String) lstRecordDetails[0]
-            .get(parentIdentifierFieldName);
+        //Check if there is an Id to query the records against
+        if (String.isNotBlank(parentRecordId)) {
+          String parentRecordIdentifier;
+
+          //Check if the Parent Identifier field name is a dot notation reference
+          if (parentIdentifierFieldName.contains('.')) {
+            SObject parentRecordInstance = lstRecordDetails[0]
+              .getSObject(parentIdentifierFieldName.subStringBefore('.'));
+            if (parentRecordInstance != null) {
+              parentRecordIdentifier = (String) parentRecordInstance.get(
+                parentIdentifierFieldName.subStringAfter('.')
+              );
+            }
+          } else {
+            parentRecordIdentifier = (String) lstRecordDetails[0]
+              .get(parentIdentifierFieldName);
+          }
+
+          Schema.DescribeSObjectResult parentSobjDescribe = ((Id) parentRecordId)
+            .getSObjectType()
+            .getDescribe();
+
+          //Add Parent SObject details to the response
+          response.parentSObj.recordId = parentRecordId;
+          response.parentSObj.recordName = parentRecordIdentifier;
+          response.parentSObj.name = parentSobjDescribe.getName();
+          response.parentSObj.label = parentSobjDescribe.getLabel();
+          response.parentSObj.labelPlural = parentSobjDescribe.getLabelPlural();
         }
-
-        Schema.DescribeSObjectResult parentSobjDescribe = ((Id) parentRecordId)
-          .getSObjectType()
-          .getDescribe();
-
-        //Add Parent SObject details to the response
-        response.parentSObj.recordId = parentRecordId;
-        response.parentSObj.recordName = parentRecordIdentifier;
-        response.parentSObj.name = parentSobjDescribe.getName();
-        response.parentSObj.label = parentSobjDescribe.getLabel();
-        response.parentSObj.labelPlural = parentSobjDescribe.getLabelPlural();
 
         //Add Permisssions to the response
         response.permissions.accessible = true;
@@ -170,11 +180,15 @@ public with sharing class SObjectService {
         response.fieldDescribeResults = JSON.serialize(fieldDescribeResults);
 
         //Add SObject Records to the response
-        response.sObj = getSObjectRecords(
-          parentRecordId,
-          requestWrapper,
-          viewAll
-        );
+        if (String.isNotBlank(parentRecordId)) {
+          response.sObj = getSObjectRecords(
+            parentRecordId,
+            requestWrapper,
+            viewAll
+          );
+        } else {
+          response.sObj = new SObjectResponseWrapper.SObj();
+        }
       }
     }
 

@@ -26,20 +26,26 @@
             <property
         name="fieldSetForColumns"
         type="String"
-        label="Field Set for SObject that will be used to display the columns in the table"
+        label="Field Set for SObject"
         description="Name of the Field Set that will be used to to display the columns for the records"
-      />
-            <property
-        name="idField"
-        type="String"
-        label="Parent Object Id Field"
-        description="Id Field through which the related records are associated to the parent record. If left empty, it will assume the current record Id as the parent Id field"
       />
             <property
         name="relationshipFieldNames"
         type="String"
         label="Relationship Field Names"
-        description="Comma Separated Field Name(s) through which the related records are associated to the parent record. If you use multiple fields, any records which are associated to this record via any of those fields will be included in the query"
+        description="Comma Separated Field API Name(s) through which the related records are associated to the parent record. If you use multiple fields, any records which are associated to this record via any of those fields will be included in the query"
+      />
+            <property
+        name="hyperlinkFieldNames"
+        type="String"
+        label="Hyperlink Field Names"
+        description="Comma Separated Field API Name(s) which should be converted to a hyperlink to the corresponding record."
+      />
+            <property
+        name="idField"
+        type="String"
+        label="Parent Object Identifier Field Name"
+        description="Id Field API Name through which the related records are associated to the parent record. If left empty, it will assume the current record Id as the parent Id field"
       />
             <property
         name="condition"
@@ -64,14 +70,14 @@
         name="title"
         type="String"
         label="Title"
-        description="An alternative title, to display as the component header"
+        description="A title to display as the component header"
       />
             <property
         name="iconName"
         type="String"
         label="Icon Name"
         placeholder="standard:app"
-        description="Component Icon Name"
+        description="Component Icon Name. Use slds icon format e.g. standard:app"
       />
             <property
         name="displayType"
@@ -86,6 +92,13 @@
         label="Show Header"
         default="true"
         description="Whether to show Header on the component. If false, 'New' record functionality will not be available"
+      />
+            <property
+        name="hideOnZeroRecords"
+        type="Boolean"
+        label="Hide On No Records?"
+        default="true"
+        description="Whether to show the component if no records are found"
       />
             <property
         name="showNewButton"
@@ -120,6 +133,7 @@
         label="Z-Index"
         description="Z-Index for the component - required for the custom hovers to work"
       />
+
             <supportedFormFactors>
                 <supportedFormFactor type="Large" />
             </supportedFormFactors>

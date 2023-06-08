@@ -3,8 +3,9 @@
   <aura:attribute name="sObjectName" type="String" />
   <aura:attribute name="commaSeparatedRecordtypes" type="String" />
   <aura:attribute name="fieldSetForColumns" type="String" />
-  <aura:attribute name="idField" type="String" />
   <aura:attribute name="relationshipFieldNames" type="String" />
+  <aura:attribute name="hyperlinkFieldNames" type="String" />
+  <aura:attribute name="idField" type="String" />
   <aura:attribute name="condition" type="String" />
   <aura:attribute name="limitCount" type="Integer" />
   <aura:attribute name="sortStatement" type="String" />
@@ -34,8 +35,9 @@
     sObjectName="{!v.sObjectName}"
     commaSeparatedRecordtypes="{!v.commaSeparatedRecordtypes}"
     fieldSetForColumns="{!v.fieldSetForColumns}"
-    idField="{!v.idField}"
     relationshipFieldNames="{!v.relationshipFieldNames}"
+    hyperlinkFieldNames="{!v.hyperlinkFieldNames}"
+    idField="{!v.idField}"
     condition="{!v.condition}"
     limitCount="{!v.limitCount}"
     sortStatement="{!v.sortStatement}"
