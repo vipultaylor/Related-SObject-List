@@ -1,3 +1,12 @@
 .custom-sobject-list-container {
     z-index: 1;
 }
+
+.custom-list-th__action:focus, .custom-list-th__action:hover {
+    background-color: inherit !important;
+}
+
+.custom-board-container>.slds-item {
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+}

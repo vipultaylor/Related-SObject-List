@@ -18,7 +18,7 @@
 
         <!-- CURRENCY -->
         <template lwc:elseif={field.properties.isCurrency}>
-            <lightning-formatted-number value={field.value} format-style="currency" currency-code={field.currencyIsoCode} currency-display-as="code" maximum-fraction-digits={field.properties.scale}></lightning-formatted-number>
+            <lightning-formatted-number value={field.value} title={field.value} format-style="currency" currency-code={field.currencyIsoCode} currency-display-as="code" maximum-fraction-digits={field.properties.scale}></lightning-formatted-number>
         </template>
 
         <!-- DATE -->
@@ -37,19 +37,19 @@
 
         <!-- EMAIL -->
         <template lwc:elseif={field.properties.isEmail}>
-            <lightning-formatted-text value={field.value} linkify="true"></lightning-formatted-text>
+            <lightning-formatted-text value={field.value} title={field.value} linkify="true"></lightning-formatted-text>
         </template>
 
         <!-- NAME -->
         <template lwc:elseif={field.properties.isName}>
             <div class="forceOutputLookupWithPreview">
                 <template lwc:if={field.properties.isHoverable}>
-                    <a id="nameFieldLink" class="slds-truncate textUnderline" data-recordid={field.recordId} tabindex="0" onclick={navigateToRecordViewPage} onfocus={showPopover} onblur={hidePopover} onmouseover={showPopover} onmouseout={hidePopover} target="_self" aria-haspopup="false">
+                    <a id="nameFieldLink" class="slds-truncate textUnderline" title={field.value} data-recordid={field.recordId} tabindex="0" onclick={navigateToRecordViewPage} onfocus={showPopover} onblur={hidePopover} onmouseover={showPopover} onmouseout={hidePopover} target="_self" aria-haspopup="false">
                         {field.value}
                     </a>
                 </template>
                 <template lwc:else>
-                    <a class="slds-truncate textUnderline" data-recordid={field.recordId} onclick={navigateToRecordViewPage} target="_self" >
+                    <a class="slds-truncate textUnderline" title={field.value} data-recordid={field.recordId} onclick={navigateToRecordViewPage} target="_self" >
                         {field.value}
                     </a>
                 </template>
@@ -58,12 +58,18 @@
 
         <!-- NUMBER -->
         <template lwc:elseif={field.properties.isNumber}>
-            <lightning-formatted-number value={field.value} maximum-fraction-digits={field.properties.scale}></lightning-formatted-number>
+            <lightning-formatted-number value={field.value} title={field.value} maximum-fraction-digits={field.properties.scale}></lightning-formatted-number>
         </template>
 
         <!-- PERCENT -->
         <template lwc:elseif={field.properties.isPercent}>
-            <lightning-formatted-number value={field.value} maximum-fraction-digits={field.properties.scale}></lightning-formatted-number> %
+            <lightning-formatted-number value={field.value} title={field.value} maximum-fraction-digits={field.properties.scale}></lightning-formatted-number> %
+        </template>
+
+        <!-- PHONE -->
+        <template lwc:elseif={field.properties.isPhone}>
+            <!--<lightning-formatted-phone value={field.value} ></lightning-formatted-phone>-->
+            <lightning-click-to-dial value={field.value} title={field.value}></lightning-click-to-dial>
         </template>
 
         <!-- REFERENCE -->
@@ -71,19 +77,19 @@
             <template lwc:if={field.properties.isNavigatable}>
                 <div class="forceOutputLookupWithPreview">
                     <template lwc:if={field.properties.isHoverable}>
-                        <a class="slds-truncate textUnderline" data-recordid={field.recordId} tabindex="0" onclick={navigateToRecordViewPage} onfocus={showPopover} onblur={hidePopover} onmouseover={showPopover} onmouseout={hidePopover} target="_self" aria-haspopup="false">
+                        <a class="slds-truncate textUnderline" title={field.value} data-recordid={field.recordId} tabindex="0" onclick={navigateToRecordViewPage} onfocus={showPopover} onblur={hidePopover} onmouseover={showPopover} onmouseout={hidePopover} target="_self" aria-haspopup="false">
                             {field.value}
                         </a>
                     </template>
                     <template lwc:else>
-                        <a class="slds-truncate textUnderline" data-recordid={field.recordId} onclick={navigateToRecordViewPage} target="_self" >
+                        <a class="slds-truncate textUnderline" title={field.value} data-recordid={field.recordId} onclick={navigateToRecordViewPage} target="_self" >
                             {field.value}
                         </a>
                     </template>
                 </div>
             </template>
             <template lwc:else>
-                <lightning-formatted-text value={field.value}></lightning-formatted-text>
+                <lightning-formatted-text value={field.value} title={field.value}></lightning-formatted-text>
             </template>
         </template>
 
@@ -92,19 +98,19 @@
             <template lwc:if={field.properties.isNavigatable}>
                 <div class="forceOutputLookupWithPreview">
                     <template lwc:if={field.properties.isHoverable}>
-                        <a class="slds-truncate textUnderline" data-recordid={field.recordId} tabindex="0" onclick={navigateToRecordViewPage} onfocus={showPopover} onblur={hidePopover} onmouseover={showPopover} onmouseout={hidePopover} target="_self" aria-haspopup="false">
+                        <a class="slds-truncate textUnderline" title={field.value} data-recordid={field.recordId} tabindex="0" onclick={navigateToRecordViewPage} onfocus={showPopover} onblur={hidePopover} onmouseover={showPopover} onmouseout={hidePopover} target="_self" aria-haspopup="false">
                             {field.value}
                         </a>
                     </template>
                     <template lwc:else>
-                        <a class="slds-truncate textUnderline" data-recordid={field.recordId} onclick={navigateToRecordViewPage} target="_self" >
+                        <a class="slds-truncate textUnderline" title={field.value} data-recordid={field.recordId} onclick={navigateToRecordViewPage} target="_self" >
                             {field.value}
                         </a>
                     </template>
                 </div>
             </template>
             <template lwc:else>
-                <lightning-formatted-text value={field.value}></lightning-formatted-text>
+                <lightning-formatted-text value={field.value} title={field.value}></lightning-formatted-text>
             </template>
         </template>
 
@@ -120,9 +126,26 @@
             </template>
         </template>
 
+        <!-- RICH TEXT AREA -->
+        <template lwc:elseif={field.properties.isRichTextArea}>
+            <template lwc:if={allowTextWrapping}>
+                <div class="allow-wrap">
+                    <lightning-formatted-rich-text value={field.value}></lightning-formatted-rich-text>
+                </div>
+            </template>
+            <template lwc:else>
+                <lightning-formatted-rich-text value={field.value}></lightning-formatted-rich-text>
+            </template>
+        </template>
+
+        <!-- TIME -->
+        <template lwc:elseif={field.properties.isTime}>
+            <lightning-formatted-date-time value={field.value} hour="2-digit" minute="2-digit" time-zone={timeZone} time-zone-name="short"></lightning-formatted-date-time>
+        </template>
+
         <!-- URL -->
         <template lwc:elseif={field.properties.isURL}>
-            <lightning-formatted-text value={field.value} linkify="true"></lightning-formatted-text>
+            <lightning-formatted-text value={field.value} title={field.value} linkify="true"></lightning-formatted-text>
         </template>
     </div>
 </template>

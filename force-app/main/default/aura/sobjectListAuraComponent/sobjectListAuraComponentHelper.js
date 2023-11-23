@@ -20,8 +20,8 @@
         component.set('v.limitCount', pageRef.state.c__limitCount);
         component.set('v.sortStatement', pageRef.state.c__sortStatement);
 
-        component.set('v.title', pageRef.state.c__title);
-        component.set('v.iconName', pageRef.state.c__iconName);
+        component.set('v.title', tabTitle);
+        component.set('v.iconName', iconName);
         component.set('v.iconSize', pageRef.state.c__iconSize);
         component.set('v.displayType', pageRef.state.c__displayType);
 
@@ -31,7 +31,10 @@
         component.set('v.allowTextWrapping', pageRef.state.c__allowTextWrapping);
 
         component.set('v.primaryRelationshipField', pageRef.state.c__primaryRelationshipField);
+        component.set('v.fieldsDispalyedForTilesLayout', pageRef.state.c__fieldsDispalyedForTilesLayout);
+        component.set('v.firstFieldLabeledDisplayed', pageRef.state.c__firstFieldLabeledDisplayed);
         component.set('v.viewAll', pageRef.state.c__viewAll);
+        component.set('v.zIndex', pageRef.state.c__zIndex);
         
 		//Set the console tab properties
         workspaceAPI

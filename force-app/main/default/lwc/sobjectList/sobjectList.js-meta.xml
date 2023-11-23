@@ -60,6 +60,11 @@
 						type="String"
         				label="Display Type"
         				datasource="apex://SObjectListDisplayTypePicklist"/>
+			<property name="displayTypeViewAll"
+						type="String"
+        				label="Display Type (for View All)"
+						datasource="apex://SObjectListDisplayTypePicklist"
+        				description="To display data in the list view format by click on View All"/>
 
             <property name="showHeader"
 						type="Boolean"
@@ -86,10 +91,26 @@
 						default="true"
         				description="Whether to allow text wrapping in Text Area fields. If false, the lines in the text area fields will be truncated" />
             
-            <property name="primaryRelationshipField"
+			<property name="primaryRelationshipField"
 						type="String"
         				label="Primary Relationship Field Name"
         				description="Field Name(s) which should be pre-populated with this recordId when clicking on the New button." />
+			<property name="fieldsDispalyedForTilesLayout"
+						type="Integer"
+        				label="Fields displayed by default (Tiles Layout)"
+						default="4"
+        				description="How many fields to be displayed in Tiles Layout? Only the first 'n' fields get displayed and this only applies when the Display Type is 'Tiles'" />
+			<property name="firstFieldLabeledDisplayed"
+						type="Boolean"
+        				label="Display First Field Label (Tiles Layout)?"
+						default="true"
+						description="To Show or Hide the first field label in Tiles Layout? (e.g. True means show the field label). This only applies when the Display Type is 'Tiles'" />
+			<property name="columnsForSupportedLayouts"
+						type="Integer"
+        				label="How many Columns (Tiles/Board Layout)?"
+						default="1"
+        				description="How many columns to be displayed in Tiles/Board Layout? This only applies when the Display Type is 'Tiles' or 'Board' (Only '1', '2' or '3' as a value is accepted. Anything else and the value will be defaulted to '1')" />
+
             <property name="zIndex"
         				type="Integer"
         				label="Z-Index"

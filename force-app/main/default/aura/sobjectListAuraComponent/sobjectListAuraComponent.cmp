@@ -21,7 +21,10 @@
     <aura:attribute name="allowTextWrapping" type="Boolean"/>
 
     <aura:attribute name="primaryRelationshipField" type="String"/>
+    <aura:attribute name="fieldsDispalyedForTilesLayout" type="Integer"/>
+    <aura:attribute name="firstFieldLabeledDisplayed" type="Boolean"/>
     <aura:attribute name="viewAll" type="Boolean"/>
+    <aura:attribute name="zIndex" type="Integer"/>
     
     <!-- Lightning Workspace API -->
     <lightning:workspaceAPI aura:id="workspace" />
@@ -52,6 +55,9 @@
                    allowTextWrapping="{!v.allowTextWrapping}"
 
                    primaryRelationshipField="{!v.primaryRelationshipField}"
-                   viewAll="{!v.viewAll}" />
+                   fieldsDispalyedForTilesLayout="{!v.fieldsDispalyedForTilesLayout}"
+                   firstFieldLabeledDisplayed="{!v.firstFieldLabeledDisplayed}"
+                   viewAll="{!v.viewAll}"
+                   zIndex="{!v.zIndex}" />
 
 </aura:component>

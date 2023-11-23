@@ -4,7 +4,7 @@
 			<article class="slds-card slds-card_boundary forceBaseCard forceRelatedListCardDesktop custom-sobject-list-container">
 				<!-- Header -->
 				<template lwc:if={showHeader}>
-					<div class="slds-card__header slds-grid slds-page-header">
+					<div class="slds-page-header slds-page-header_joined slds-page-header_bleed slds-shrink-none slds-is-relative slds-border_bottom">
 						<header class="slds-media slds-media_center slds-has-flexi-truncate">
 							<div class="slds-media__figure">
 								<lightning-icon icon-name={iconName} size={iconSize}></lightning-icon>
@@ -38,18 +38,14 @@
 								</h2>
 							</div>
 							<div class="slds-no-flex">
-								<lightning-layout>
-									<lightning-layout-item padding="horizontal-small">
-										<lightning-button-icon icon-name="utility:refresh" alternative-text="Refresh" title="Refresh" variant="border-filled" onclick={refreshData}></lightning-button-icon>
-									</lightning-layout-item>
-									<lightning-layout-item>
-										<template lwc:if={showNewButton}>
-											<template lwc:if={responseWrapper.permissions.creatable}>
-												<lightning-button label="New" onclick={createRecord}></lightning-button>
-											</template>
+								<lightning-button-group>
+									<lightning-button-icon icon-name="utility:refresh" alternative-text="Refresh" title="Refresh" variant="border-filled" onclick={refreshData}></lightning-button-icon>
+									<template lwc:if={showNewButton}>
+										<template lwc:if={responseWrapper.permissions.creatable}>
+											<lightning-button label="New" onclick={createRecord}></lightning-button>
 										</template>
-									</lightning-layout-item>
-								</lightning-layout>
+									</template>
+								</lightning-button-group>
 							</div>
 						</header>
 					</div>
@@ -73,10 +69,22 @@
 												<template lwc:if={viewAll}>
 													<th style="width: 50px"></th>
 												</template>
-												<template for:each={responseWrapper.fields} for:item="field">
-													<th key={field.name} class="slds-text-heading--label" scope="col">
-														<div class="slds-truncate">{field.label}</div>
-													</th>
+												<template iterator:it={responseWrapper.fields}>
+													<template lwc:if={it.value.sortable}>
+														<th key={it.value.name} class="slds-text-heading--label" scope="col">
+															<a class="slds-th__action slds-text-link_reset custom-list-th__action" tabindex="0" title={it.value.label} onclick={sortRecords} data-index={it.index} data-name={it.value.name}>
+																<div class="slds-truncate">{it.value.label}</div>
+																<template lwc:if={it.value.sortIcon}>
+																	<lightning-icon icon-name={it.value.sortIcon} size="xx-small" alternative-text={sortedDirection} title={sortedDirection}></lightning-icon>
+																</template>
+															</a>
+														</th>
+													</template>
+													<template lwc:else>
+														<th key={it.value.name} class="slds-text-heading--label" scope="col">
+															<div class="slds-truncate" title={it.value.label}>{it.value.label}</div>
+														</th>
+													</template>
 												</template>
 												<!-- Action Menu -->
 												<th style="width: 50px"></th>
@@ -117,24 +125,40 @@
 								
 								<!-- BEGIN: TILES format-->
 								<template lwc:elseif={isTilesLayout}>
-									<div class="slds-p-around_medium">
-										<ul class="slds-has-dividers_bottom-space">
+									<div class="slds-p-horizontal_small slds-p-vertical_xx-small">
+										<ul class="slds-grid slds-wrap slds-gutters">
 											<template for:each={responseWrapper.sObj.records} for:item="record" for:index="recordIndex">
-												<li key={record.Id} class="slds-item">
+												<li key={record.Id} class={tilesLayoutColumnClass}>
 													<lightning-tile label="" class="slds-tile_board">
 														<dl class="slds-list_horizontal slds-wrap">
 															<template for:each={record.fields} for:item="recordField" for:index="fieldIndex">
-																<dt key={recordField.key} class="slds-dl_horizontal__label slds-text-color_weak slds-truncate slds-m-bottom_xx-small">
-																	{recordField.fieldDescribe.label}
-																</dt>
-																<dd key={recordField.key} class="slds-dl_horizontal__detail slds-tile__meta slds-truncate slds-m-bottom_xx-small">
-																	<c-custom-output-field field-describe={recordField.fieldDescribe}
-																		field-value={recordField.value}
-																		record-id={recordField.recordId}
-																		is-navigatable={recordField.isNavigatable}
-																		is-hoverable={isHoverable}
-																		allow-text-wrapping={allowTextWrapping}></c-custom-output-field>
-																</dd>
+																<!-- Check if the field should be displayed -->
+																<template lwc:if={recordField.tilesLayout.displayField}>
+																	<!-- 1215090 Added condition to check if the label of the field should be displayed -->
+																	<template lwc:if={recordField.tilesLayout.displayLabel}>
+																		<dt key={recordField.key} title={recordField.fieldDescribe.label} class="slds-dl_horizontal__label slds-text-color_weak slds-truncate slds-m-bottom_xx-small">
+																			{recordField.fieldDescribe.label}
+																		</dt>
+																		<dd key={recordField.key} class="slds-dl_horizontal__detail slds-tile__meta slds-truncate slds-m-bottom_xx-small">
+																			<c-custom-output-field field-describe={recordField.fieldDescribe}
+																				field-value={recordField.value}
+																				record-id={recordField.recordId}
+																				is-navigatable={recordField.isNavigatable}
+																				is-hoverable={isHoverable}
+																				allow-text-wrapping={allowTextWrapping}></c-custom-output-field>
+																		</dd>
+																	</template>
+																	<template lwc:else>
+																		<dt key={recordField.key} class="slds-dl_horizontal__label slds-truncate slds-m-bottom_xx-small slds-size_12-of-12">
+																			<c-custom-output-field field-describe={recordField.fieldDescribe}
+																				field-value={recordField.value}
+																				record-id={recordField.recordId}
+																				is-navigatable={recordField.isNavigatable}
+																				is-hoverable={isHoverable}
+																				allow-text-wrapping={allowTextWrapping}></c-custom-output-field>
+																		</dt>
+																	</template>
+																</template>
 															</template>
 														</dl>
 													</lightning-tile>
@@ -147,9 +171,9 @@
 								
 								<!-- BEGIN: BOARD format-->
 								<template lwc:elseif={isBoardLayout}>
-									<ul class="slds-has-dividers_around-space slds-m-horizontal_small">
+									<ul class="slds-grid slds-wrap slds-gutters slds-has-dividers_around-space slds-m-horizontal_small custom-board-container">
 										<template for:each={responseWrapper.sObj.records} for:item="record" for:index="recordIndex">
-											<li key={record.Id} class="slds-item">
+											<li key={record.Id} class={boardLayoutColumnClass}>
 												<article class="slds-tile slds-tile_board">
 													<div class="slds-tile__detail">
 														<template for:each={record.fields} for:item="recordField" for:index="fieldIndex">

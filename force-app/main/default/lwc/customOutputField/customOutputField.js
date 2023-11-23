@@ -1,5 +1,6 @@
 import { LightningElement, api, track } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
+import TIME_ZONE from '@salesforce/i18n/timeZone';
 
 export default class CustomOutputField extends NavigationMixin(LightningElement) {
     @api fieldDescribe;
@@ -16,6 +17,8 @@ export default class CustomOutputField extends NavigationMixin(LightningElement)
     @track containerBoundingBoxRight;
     @track isPopoverActive = false;
 
+    timeZone = TIME_ZONE;
+
     fieldObj = {
         properties: {
             isBoolean: false,
@@ -26,9 +29,12 @@ export default class CustomOutputField extends NavigationMixin(LightningElement)
             isName: false,
             isNumber: false,
             isPercent: false,
+            isPhone: false,
             isReference: false,
             isText: false,
             isTextArea: false,
+            isRichTextArea: false,
+            isTime: false,
             isURL: false,
         },
     }
@@ -65,12 +71,22 @@ export default class CustomOutputField extends NavigationMixin(LightningElement)
                 this.fieldObj.properties.isPercent = true;
                 this.fieldObj.properties.scale = this.fieldDescribe.scale;
                 break;
+            case 'phone': 
+                this.fieldObj.properties.isPhone = true;
+                break;
             case 'reference': 
                 this.fieldObj.properties.isReference = true;
                 this.fieldObj.recordId = this.recordId;
                 break;
             case 'textarea': 
-                this.fieldObj.properties.isTextArea = true;
+                if(this.fieldDescribe.htmlFormatted){
+                    this.fieldObj.properties.isRichTextArea = true;
+                } else {
+                    this.fieldObj.properties.isTextArea = true;
+                }
+                break;
+            case 'time': 
+                this.fieldObj.properties.isTime = true;
                 break;
             case 'url': 
                 this.fieldObj.properties.isURL = true;
