@@ -36,6 +36,7 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
 	@api iconName = "standard:app";
 	@api iconSize = "small";
 	@api displayType = "list";
+	@api displayTypeViewAll = "list";
 
 	@api showHeader;
 	@api hideOnZeroRecords;
@@ -44,6 +45,10 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
 	@api allowTextWrapping;
 
 	@api primaryRelationshipField = "";
+	@api fieldsDispalyedForTilesLayout = 4;
+	@api firstFieldLabeledDisplayed;
+	@api columnsForSupportedLayouts = 1;
+
 	@api viewAll = false;
 	@api zIndex = 0;
 
@@ -58,8 +63,12 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
 	@track isNewModal = false;
 	@track isDeleteModal = false;
 
+	@track initialResponseWrapper;
 	@track responseWrapper;
 
+	sortedColumn;
+    sortedDirection = 'asc';
+	
 	selectedrecordtypeId = "";
 	selectedRecordIdForDelete = "";
 
@@ -158,6 +167,42 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
 		});
 
 		return options;
+	}
+
+	get tilesLayoutColumnClass() {
+		var columnClasses = "slds-item slds-col slds-m-bottom_small slds-size_1-of-1 ";
+		var columnsForSupportedLayouts = this.columnsForSupportedLayouts;
+
+		if(!columnsForSupportedLayouts || columnsForSupportedLayouts === 0 || columnsForSupportedLayouts > 3){
+			columnsForSupportedLayouts = 1;
+		}
+
+		if(columnsForSupportedLayouts === 2){
+			columnClasses += "slds-medium-size_1-of-2 slds-large-size_1-of-2";
+		}
+		else if(columnsForSupportedLayouts === 3){
+			columnClasses += "slds-medium-size_1-of-3 slds-large-size_1-of-3";
+		}
+		
+		return columnClasses;
+	}
+
+	get boardLayoutColumnClass() {
+		var columnClasses = "slds-item slds-col slds-size_1-of-1 ";
+		var columnsForSupportedLayouts = this.columnsForSupportedLayouts;
+
+		if(!columnsForSupportedLayouts || columnsForSupportedLayouts === 0 || columnsForSupportedLayouts > 3){
+			columnsForSupportedLayouts = 1;
+		}
+
+		if(columnsForSupportedLayouts === 2){
+			columnClasses += "slds-medium-size_1-of-2 slds-large-size_1-of-2";
+		}
+		else if(columnsForSupportedLayouts === 3){
+			columnClasses += "slds-medium-size_1-of-3 slds-large-size_1-of-3";
+		}
+		
+		return columnClasses;
 	}
 
 	refreshData() {
@@ -259,6 +304,46 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
 			});
 	}
 
+	sortRecords( event ) {
+		let fieldIndex = event.currentTarget.getAttribute('data-index');
+		let fieldName = event.currentTarget.getAttribute('data-name');
+
+		console.log('fieldIndex: ' + fieldIndex +', fieldName: ' + fieldName);
+	
+		//set the sorted direction
+		if ( this.sortedColumn === fieldName ) {
+			this.sortedDirection = ( this.sortedDirection === 'asc' ? 'desc' : 'asc' );
+		}
+		else {
+			this.sortedDirection = 'asc';
+		}
+
+		let isReverse = this.sortedDirection === 'asc' ? 1 : -1;
+	
+		this.sortedColumn = fieldName;
+	
+		// sort the data
+		this.responseWrapper.sObj.records = JSON.parse(JSON.stringify(this.responseWrapper.sObj.records)).sort((a, b) => {
+			a = a.fields[fieldIndex].value ? a.fields[fieldIndex].value.toLowerCase() : ''; // Handle null values
+			b = b.fields[fieldIndex].value ? b.fields[fieldIndex].value.toLowerCase() : '';
+			return a >= b ? 1 * isReverse : -1 * isReverse;
+		});
+
+		//update the index for the records
+		this.responseWrapper.sObj.records.forEach((record, recordIndex) => {
+			record.index = recordIndex + 1;
+		})
+		
+		//update the sorting icon
+		this.responseWrapper.fields.forEach((field) => {
+			if(field.name === fieldName){
+				field.sortIcon = this.sortedDirection === 'asc' ? 'utility:arrowup' : 'utility:arrowdown';
+			} else {
+				field.sortIcon = undefined;
+			}
+		})
+	}
+
 	closeModal() {
 		// to close modal set isModalOpen tarck value as false
 		this.isModalOpen = false;
@@ -272,7 +357,7 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
 
 		//Check if Primary Relationship field is provided
 		if (this.primaryRelationshipField) {
-			defaultValuesObj[this.primaryRelationshipField] = this.recordId;
+			defaultValuesObj[this.primaryRelationshipField] = this.responseWrapper.parentSObj.recordId;
 		}
 
 		const defaultValues = encodeDefaultFieldValues(defaultValuesObj);
@@ -299,6 +384,11 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
 	}
 
 	navigateToViewAll() {
+		var displayTypeData = this.displayType;
+		if(this.displayTypeViewAll){
+			displayTypeData = this.displayTypeViewAll;
+		}
+
 		this[NavigationMixin.Navigate]({
 			type: "standard__component",
 			attributes: {
@@ -319,7 +409,7 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
 				c__title: this.title,
 				c__iconName: this.iconName,
 				c__iconSize: "medium",
-				c__displayType: this.displayType,
+				c__displayType: displayTypeData,
 
 				c__showHeader: this.showHeader,
 				c__showNewButton: this.showNewButton,
@@ -327,7 +417,10 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
 				c__allowTextWrapping: this.allowTextWrapping,
 
 				c__primaryRelationshipField: this.primaryRelationshipField,
-				c__viewAll: true
+				c__fieldsDispalyedForTilesLayout: this.fieldsDispalyedForTilesLayout,
+				c__firstFieldLabeledDisplayed: this.firstFieldLabeledDisplayed,
+				c__viewAll: true,
+				c__zIndex: this.zIndex
 			}
 		});
 	}
@@ -398,6 +491,8 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
 				this.responseWrapper.parentSObj = result.parentSObj;
 				this.responseWrapper.permissions = result.permissions;
 
+				console.log(JSON.parse(JSON.stringify(this.responseWrapper)));
+
 				this._setRecordCounts(result.sObj.fullCountOfSObjects);
 			})
 			.catch((error) => {
@@ -460,11 +555,15 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
 				recordObj.fields = [];
 				recordObj.Id = record.Id;
 				if (fields) {
-					fields.forEach((field) => {
+					fields.forEach((field, fieldIndex) => {
 						var recordObjField = {
 							key: record.Id + field.name,
 							fieldDescribe: field,
-							recordId: record.Id
+							recordId: record.Id,
+							tilesLayout: {
+								displayField: fieldIndex < this.fieldsDispalyedForTilesLayout ? true : false,
+								displayLabel: fieldIndex === 0 && !this.firstFieldLabeledDisplayed ? false : true
+							}
 						};
 						
 						if (Object.prototype.hasOwnProperty.call(record, field.name)) {
@@ -473,7 +572,7 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
 							recordObjField.value = null;
 						}
 						
-						//Change the record id and field value for reference fiekds
+						//Change the record id and field value for reference fields
 						if (field.type === "reference") {
 							if (record[field.relationshipName]) {
 								// eslint-disable-next-line dot-notation
