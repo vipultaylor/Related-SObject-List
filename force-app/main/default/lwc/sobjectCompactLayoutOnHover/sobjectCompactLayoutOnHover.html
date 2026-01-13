@@ -1,7 +1,7 @@
 <template>
     <template if:true={isLoaded}>
         <div id="popoverContainer" style="position: absolute !important;">
-            <section class="slds-popover slds-popover_panel slds-nubbin_left-top custom-popover-section" role="dialog" aria-labelledby="custom-popover-header-id" aria-describedby="custom-popover-body-id" onblur={closePopover} onmouseover={keepPopoverActive} onmouseleave={closePopover}>
+            <section class="slds-popover slds-popover_panel slds-nubbin_left-top custom-popover-section" role="dialog" aria-labelledby="custom-popover-header-id" aria-describedby="custom-popover-body-id" onmouseenter={keepPopoverActive} onmouseleave={closePopover}>
                 <span class="slds-float_right slds-popover__close">
                     <lightning-button-icon icon-name="utility:close" variant="bare" size="small" alternative-text="Close" title="Close" onclick={closePopover}></lightning-button-icon>
                 </span>

@@ -19,6 +19,11 @@ export default class CustomOutputField extends NavigationMixin(LightningElement)
 
     timeZone = TIME_ZONE;
 
+    // Separate timeouts for show and hide to prevent conflicts
+    showDelayTimeout;
+    hideDelayTimeout;
+    isHovering = false;
+
     fieldObj = {
         properties: {
             isBoolean: false,
@@ -47,48 +52,48 @@ export default class CustomOutputField extends NavigationMixin(LightningElement)
         this.fieldObj.currencyIsoCode = this.currencyIsoCode;
 
 		switch(this.fieldDescribe.type){
-            case 'boolean': 
+            case 'boolean':
                 this.fieldObj.properties.isBoolean = true;
                 break;
-            case 'currency': 
+            case 'currency':
                 this.fieldObj.properties.isCurrency = true;
                 this.fieldObj.properties.scale = this.fieldDescribe.scale;
                 break;
-            case 'date': 
+            case 'date':
                 this.fieldObj.properties.isDate = true;
                 break;
-            case 'datetime': 
+            case 'datetime':
                 this.fieldObj.properties.isDateTime = true;
                 break;
-            case 'email': 
+            case 'email':
                 this.fieldObj.properties.isEmail = true;
                 break;
-            case 'double': 
+            case 'double':
                 this.fieldObj.properties.isNumber = true;
                 this.fieldObj.properties.scale = this.fieldDescribe.scale;
                 break;
-            case 'percent': 
+            case 'percent':
                 this.fieldObj.properties.isPercent = true;
                 this.fieldObj.properties.scale = this.fieldDescribe.scale;
                 break;
-            case 'phone': 
+            case 'phone':
                 this.fieldObj.properties.isPhone = true;
                 break;
-            case 'reference': 
+            case 'reference':
                 this.fieldObj.properties.isReference = true;
                 this.fieldObj.recordId = this.recordId;
                 break;
-            case 'textarea': 
+            case 'textarea':
                 if(this.fieldDescribe.htmlFormatted){
                     this.fieldObj.properties.isRichTextArea = true;
                 } else {
                     this.fieldObj.properties.isTextArea = true;
                 }
                 break;
-            case 'time': 
+            case 'time':
                 this.fieldObj.properties.isTime = true;
                 break;
-            case 'url': 
+            case 'url':
                 this.fieldObj.properties.isURL = true;
                 break;
             default:
@@ -134,31 +139,57 @@ export default class CustomOutputField extends NavigationMixin(LightningElement)
 
     handlePopoverStateChange(event){
         this.isPopoverActive = event.detail.value;
+        // If popover became active, cancel any pending hide
+        if (this.isPopoverActive) {
+            window.clearTimeout(this.hideDelayTimeout);
+        } else {
+            // Popover requested to close (e.g., close button clicked)
+            // Hide immediately without delay
+            this.recordIdForPopover = null;
+            this.containerBoundingBoxLeft = null;
+            this.containerBoundingBoxRight = null;
+        }
     }
 
     showPopover(event){
+        // Cancel any pending hide operation
+        window.clearTimeout(this.hideDelayTimeout);
+        this.isHovering = true;
+
+        // If popover is already showing for this record, don't restart
+        if (this.recordIdForPopover === this.recordId) {
+            return;
+        }
+
         var containerBoundingBox = event.currentTarget.getBoundingClientRect();
 
-        this.recordIdForPopover = null;
-        window.clearTimeout(this.delayTimeout);
+        // Cancel any pending show operation and start fresh
+        window.clearTimeout(this.showDelayTimeout);
         // eslint-disable-next-line @lwc/lwc/no-async-operation
-        this.delayTimeout = setTimeout(() => {
-            this.recordIdForPopover = this.recordId;
-            this.containerBoundingBoxLeft = containerBoundingBox.left;
-            this.containerBoundingBoxRight = containerBoundingBox.right;
+        this.showDelayTimeout = setTimeout(() => {
+            // Only show if still hovering
+            if (this.isHovering) {
+                this.recordIdForPopover = this.recordId;
+                this.containerBoundingBoxLeft = containerBoundingBox.left;
+                this.containerBoundingBoxRight = containerBoundingBox.right;
+            }
         }, 500);
     }
 
     hidePopover(){
-        window.clearTimeout(this.delayTimeout);
+        // Cancel any pending show operation
+        window.clearTimeout(this.showDelayTimeout);
+        this.isHovering = false;
+
         // eslint-disable-next-line @lwc/lwc/no-async-operation
-        this.delayTimeout = setTimeout(() => {
-            if(!this.isPopoverActive){
+        this.hideDelayTimeout = setTimeout(() => {
+            // Only hide if not hovering and popover is not being interacted with
+            if(!this.isHovering && !this.isPopoverActive){
                 this.recordIdForPopover = null;
                 this.containerBoundingBoxLeft = null;
                 this.containerBoundingBoxRight = null;
             }
-        }, 300);
+        }, 350);
     }
 
 }

@@ -1,17 +1,29 @@
 <template>
-	<template lwc:if={isLoaded}>
-		<template lwc:if={responseWrapper.displayComponent}>
-			<article class="slds-card slds-card_boundary forceBaseCard forceRelatedListCardDesktop custom-sobject-list-container">
-				<!-- Header -->
-				<template lwc:if={showHeader}>
-					<div class="slds-page-header slds-page-header_joined slds-page-header_bleed slds-shrink-none slds-is-relative slds-border_bottom">
-						<header class="slds-media slds-media_center slds-has-flexi-truncate">
-							<div class="slds-media__figure">
+	<template lwc:if={showComponent}>
+		<article class="slds-card slds-card_boundary slds-card_related-list-fix custom-sobject-list-container">
+			<!-- Header -->
+			<template lwc:if={showHeader}>
+				<div class="slds-page-header slds-page-header_joined slds-page-header_bleed slds-shrink-none slds-is-relative">
+					<header class="slds-media slds-media_center slds-has-flexi-truncate">
+						<div class="slds-media__figure">
+							<!-- Skeleton icon -->
+							<template lwc:if={showLoadingSkeleton}>
+								<div class="skeleton-icon skeleton-animate"></div>
+							</template>
+							<!-- Real icon -->
+							<template lwc:else>
 								<lightning-icon icon-name={iconName} size={iconSize}></lightning-icon>
-							</div>
-							<div class="slds-media__body">
-								<!-- BREADCRUMBS -->
-								<template lwc:if={viewAll}>
+							</template>
+						</div>
+						<div class="slds-media__body">
+							<!-- Skeleton title -->
+							<template lwc:if={showLoadingSkeleton}>
+								<div class="skeleton-title skeleton-animate"></div>
+							</template>
+							<!-- Real title content -->
+							<template lwc:else>
+								<!-- BREADCRUMBS (only in viewAll mode with loaded data) -->
+								<template lwc:if={showBreadcrumbs}>
 									<nav role="navigation" aria-label="Breadcrumbs">
 										<ol class="slds-breadcrumb slds-list_horizontal slds-wrap">
 											<li class="slds-breadcrumb__item">
@@ -25,19 +37,35 @@
 								</template>
 								<!-- COMPONENT TITLE -->
 								<h2 class="header-title-container">
-									<template lwc:if={viewAll}>
-										<div class="slds-card__header-title slds-truncate">
-											{title} ({responseWrapper.sObj.displayCount})
-										</div>
+									<template lwc:if={showTitleWithCount}>
+										<template lwc:if={viewAll}>
+											<div class="slds-card__header-title slds-truncate">
+												{title} ({responseWrapper.sObj.displayCount})
+											</div>
+										</template>
+										<template lwc:else>
+											<a class="slds-card__header-title slds-card__header-link" onclick={navigateToViewAll}>
+												<span class="slds-truncate">{title} ({responseWrapper.sObj.displayCount})</span>
+											</a>
+										</template>
 									</template>
 									<template lwc:else>
-										<a class="slds-card__header-title slds-card__header-link" onclick={navigateToViewAll}>
-											<span class="slds-truncate">{title} ({responseWrapper.sObj.displayCount})</span>
-										</a>
+										<div class="slds-card__header-title slds-truncate">{title}</div>
 									</template>
 								</h2>
-							</div>
-							<div class="slds-no-flex">
+							</template>
+						</div>
+						<div class="slds-no-flex">
+							<!-- Skeleton buttons -->
+							<template lwc:if={showLoadingSkeleton}>
+								<div class="skeleton-button skeleton-animate"></div>
+							</template>
+							<!-- Error state retry button -->
+							<template lwc:elseif={hasApexError}>
+								<lightning-button-icon icon-name="utility:refresh" alternative-text="Retry" title="Retry" variant="border-filled" onclick={refreshData}></lightning-button-icon>
+							</template>
+							<!-- Normal header buttons (only when loaded successfully) -->
+							<template lwc:elseif={isDataLoaded}>
 								<lightning-button-group>
 									<lightning-button-icon icon-name="utility:refresh" alternative-text="Refresh" title="Refresh" variant="border-filled" onclick={refreshData}></lightning-button-icon>
 									<template lwc:if={showNewButton}>
@@ -46,18 +74,123 @@
 										</template>
 									</template>
 								</lightning-button-group>
-							</div>
-						</header>
+							</template>
+						</div>
+					</header>
+				</div>
+			</template>
+
+			<!-- Body -->
+			<div class="slds-card__body slds-card__body_inner">
+				<!-- Loading Skeleton Body -->
+				<template lwc:if={showLoadingSkeleton}>
+					<template lwc:if={isListLayout}>
+						<table class="slds-table slds-table--bordered slds-no-hover slds-table_fixed-layout">
+							<thead>
+								<tr class="slds-line-height_reset">
+									<th class="slds-text-heading--label" scope="col"><div class="skeleton-cell-header skeleton-animate"></div></th>
+									<th class="slds-text-heading--label" scope="col"><div class="skeleton-cell-header skeleton-animate"></div></th>
+									<th class="slds-text-heading--label" scope="col"><div class="skeleton-cell-header skeleton-animate"></div></th>
+									<th style="width: 50px"></th>
+								</tr>
+							</thead>
+							<tbody>
+								<template for:each={skeletonRows} for:item="row">
+									<tr key={row} class="slds-no-hover">
+										<td><div class="skeleton-cell skeleton-animate"></div></td>
+										<td><div class="skeleton-cell skeleton-animate"></div></td>
+										<td><div class="skeleton-cell-short skeleton-animate"></div></td>
+										<td></td>
+									</tr>
+								</template>
+							</tbody>
+						</table>
+					</template>
+					<template lwc:elseif={isTilesLayout}>
+						<div class="slds-p-horizontal_small slds-p-vertical_xx-small">
+							<ul class="slds-grid slds-wrap slds-gutters">
+								<template for:each={skeletonRows} for:item="row">
+									<li key={row} class={tilesLayoutColumnClass}>
+										<div class="skeleton-tile skeleton-animate">
+											<div class="skeleton-tile-title skeleton-animate"></div>
+											<div class="skeleton-tile-field skeleton-animate"></div>
+											<div class="skeleton-tile-field-short skeleton-animate"></div>
+										</div>
+									</li>
+								</template>
+							</ul>
+						</div>
+					</template>
+					<template lwc:else>
+						<ul class="slds-grid slds-wrap slds-gutters slds-has-dividers_around-space slds-m-horizontal_small custom-board-container">
+							<template for:each={skeletonRows} for:item="row">
+								<li key={row} class={boardLayoutColumnClass}>
+									<article class="slds-tile slds-tile_board">
+										<div class="slds-tile__detail">
+											<div class="skeleton-board-line skeleton-animate"></div>
+											<div class="skeleton-board-line-short skeleton-animate"></div>
+										</div>
+									</article>
+								</li>
+							</template>
+						</ul>
+					</template>
+				</template>
+
+				<!-- Configuration Error Body -->
+				<template lwc:elseif={hasConfigurationError}>
+					<div class="slds-illustration slds-illustration_small empty-state-container">
+						<div class="empty-state-icon-wrapper config-error-icon">
+							<lightning-icon icon-name="utility:warning" size="large" class="empty-state-icon"></lightning-icon>
+						</div>
+						<div class="slds-text-longform">
+							<h3 class="slds-text-heading_medium empty-state-title">Configuration Required</h3>
+							<p class="slds-text-body_regular empty-state-message">{configurationError}</p>
+						</div>
 					</div>
 				</template>
-				
-				<!-- Body -->
-				<div class="slds-card__body slds-card__body_inner">
+
+				<!-- Apex Error Body -->
+				<template lwc:elseif={hasApexError}>
+					<div class="slds-illustration slds-illustration_small empty-state-container">
+						<div class="empty-state-icon-wrapper apex-error-icon">
+							<lightning-icon icon-name="utility:error" size="large" class="empty-state-icon"></lightning-icon>
+						</div>
+						<div class="slds-text-longform">
+							<h3 class="slds-text-heading_medium empty-state-title">Unable to Load Data</h3>
+							<p class="slds-text-body_regular empty-state-message">{apexError}</p>
+						</div>
+						<div class="slds-m-top_medium">
+							<lightning-button variant="neutral" label="Retry" onclick={refreshData} icon-name="utility:refresh"></lightning-button>
+						</div>
+					</div>
+				</template>
+
+				<!-- Loaded Content Body -->
+				<template lwc:elseif={isDataLoaded}>
 					<div class="slds-grid--pull-padded">
 						<template lwc:if={isRefreshing}>
-							<div class="slds-card__body slds-card__body_inner">
-								<lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
-							</div>
+							<!-- Inline refresh skeleton -->
+							<template lwc:if={isListLayout}>
+								<table class="slds-table slds-table--bordered slds-no-hover slds-table_fixed-layout skeleton-refresh-overlay">
+									<tbody>
+										<template for:each={skeletonRows} for:item="row">
+											<tr key={row} class="slds-no-hover">
+												<td><div class="skeleton-cell skeleton-animate"></div></td>
+												<td><div class="skeleton-cell skeleton-animate"></div></td>
+												<td><div class="skeleton-cell-short skeleton-animate"></div></td>
+												<td></td>
+											</tr>
+										</template>
+									</tbody>
+								</table>
+							</template>
+							<template lwc:else>
+								<div class="slds-card__body slds-card__body_inner slds-p-around_medium">
+									<div class="skeleton-cell skeleton-animate slds-m-bottom_x-small"></div>
+									<div class="skeleton-cell-short skeleton-animate"></div>
+								</div>
+							</template>
 						</template>
 						<template lwc:else>
 							<template lwc:if={hasRecords}>
@@ -122,7 +255,7 @@
 									</table>
 								</template>
 								<!-- END: LIST format-->
-								
+
 								<!-- BEGIN: TILES format-->
 								<template lwc:elseif={isTilesLayout}>
 									<div class="slds-p-horizontal_small slds-p-vertical_xx-small">
@@ -168,7 +301,7 @@
 									</div>
 								</template>
 								<!-- END: TILES format-->
-								
+
 								<!-- BEGIN: BOARD format-->
 								<template lwc:elseif={isBoardLayout}>
 									<ul class="slds-grid slds-wrap slds-gutters slds-has-dividers_around-space slds-m-horizontal_small custom-board-container">
@@ -196,71 +329,79 @@
 								</template>
 								<!-- END: BOARD format-->
 							</template>
+							<!-- Empty State -->
+							<template lwc:else>
+								<div class="slds-illustration slds-illustration_small empty-state-container">
+									<div class="empty-state-icon-wrapper">
+										<lightning-icon icon-name={emptyStateIcon} size="large" class="empty-state-icon"></lightning-icon>
+									</div>
+									<div class="slds-text-longform">
+										<h3 class="slds-text-heading_medium empty-state-title">{emptyStateTitle}</h3>
+										<p class="slds-text-body_regular empty-state-message">{emptyStateMessage}</p>
+									</div>
+									<template lwc:if={showNewButton}>
+										<template lwc:if={responseWrapper.permissions.creatable}>
+											<div class="slds-m-top_medium">
+												<lightning-button variant="brand" label={emptyStateButtonLabel} onclick={createRecord}></lightning-button>
+											</div>
+										</template>
+									</template>
+								</div>
+							</template>
+						</template>
+					</div>
+				</template>
+			</div>
+
+			<!-- Footer -->
+			<template lwc:if={showFooter}>
+				<div class="slds-card__footer">
+					<a onclick={navigateToViewAll}>{buttonViewAll}</a>
+				</div>
+			</template>
+		</article>
+
+		<!-- New Record Modal-->
+		<template lwc:if={isModalOpen}>
+			<section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" class="slds-modal slds-fade-in-open">
+				<div class="slds-modal__container">
+					<!-- Modal Header-->
+					<div class="slds-modal__header">
+						<button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" onclick={closeModal}>
+							<lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse" size="small"></lightning-icon>
+							<span class="slds-assistive-text">{buttonClose}</span>
+						</button>
+						<h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">{modalHeader}</h1>
+					</div>
+					<!-- Modal Body-->
+					<div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+						<!-- Modal Content for New Record -->
+						<template lwc:if={isNewModal}>
+							<lightning-radio-group name="recordtypeSelection" label={LABEL.SOBject_Select_Recordtype} options={recordtypeOptions} type="radio" onchange={handleRecordtypeChange}></lightning-radio-group>
+						</template>
+						<!-- Modal Content for Delete Record -->
+						<template lwc:elseif={isDeleteModal}>
+							<div class="detail slds-text-align--center">
+								{deleteConfirmationMessage}
+							</div>
+						</template>
+					</div>
+					<!-- Modal Footer-->
+					<div class="slds-modal__footer">
+						<button class="slds-button slds-button_neutral" onclick={closeModal}>{buttonCancel}</button>
+						<!-- Action Button for New Record -->
+						<template lwc:if={isNewModal}>
+							<button class="slds-button slds-button_brand" onclick={navigateToNewRecordPage}>{buttonNext}</button>
+						</template>
+						<!-- Action Button for Delete Record -->
+						<template lwc:elseif={isDeleteModal}>
+							<button class="slds-button slds-button_brand" onclick={handleDelete}>{buttonDelete}</button>
 						</template>
 					</div>
 				</div>
-				
-				<!-- Footer -->
-				<template lwc:if={isRefreshing}>
-					<!-- nothing -->
-				</template>
-				<template lwc:else>
-					<template lwc:if={hasRecords}>
-						<template lwc:if={viewAll}>
-							<!-- nothing -->
-						</template>
-						<template lwc:else>
-							<div class="slds-card__footer">
-								<a onclick={navigateToViewAll}>{buttonViewAll}</a>
-							</div>
-						</template>
-					</template>
-				</template>
-			</article>
-			
-			<!-- New Record Modal-->
-			<!--Use template lwc:if to display/hide popup based on isModalOpen value-->
-			<template lwc:if={isModalOpen}>
-				<section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" class="slds-modal slds-fade-in-open">
-					<div class="slds-modal__container">
-						<!-- Modal Header-->
-						<div class="slds-modal__header">
-							<button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" onclick={closeModal}>
-								<lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse" size="small"></lightning-icon>
-								<span class="slds-assistive-text">{buttonClose}</span>
-							</button>
-							<h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">{modalHeader}</h1>
-						</div>
-						<!-- Modal Body-->
-						<div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
-							<!-- Modal Content for New Record -->
-							<template lwc:if={isNewModal}>
-								<lightning-radio-group name="recordtypeSelection" label={LABEL.SOBject_Select_Recordtype} options={recordtypeOptions} type="radio" onchange={handleRecordtypeChange}></lightning-radio-group>
-							</template>
-							<!-- Modal Content for Delete Record -->
-							<template lwc:elseif={isDeleteModal}>
-								<div class="detail slds-text-align--center">
-									{deleteConfirmationMessage}
-								</div>
-							</template>
-						</div>
-						<!-- Modal Footer-->
-						<div class="slds-modal__footer">
-							<button class="slds-button slds-button_neutral" onclick={closeModal}>{buttonCancel}</button>
-							<!-- Action Button for New Record -->
-							<template lwc:if={isNewModal}>
-								<button class="slds-button slds-button_brand" onclick={navigateToNewRecordPage}>{buttonNext}</button>
-							</template>
-							<!-- Action Button for Delete Record -->
-							<template lwc:elseif={isDeleteModal}>
-								<button class="slds-button slds-button_brand" onclick={handleDelete}>{buttonDelete}</button>
-							</template>
-						</div>
-					</div>
-				</section>
-				
-				<div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
-			</template>
+			</section>
+
+			<div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
 		</template>
 	</template>
 </template>

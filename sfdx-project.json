@@ -1,12 +1,20 @@
 {
   "packageDirectories": [
     {
+      "versionName": "ver 1.0",
+      "versionNumber": "1.0.0.NEXT",
       "path": "force-app",
-      "default": true
+      "default": true,
+      "package": "Related-SObject-List",
+      "versionDescription": "A configurable Lightning Web Component for displaying related SObject records on any record page"
     }
   ],
-  "name": "vipulpartnerdevness",
+  "name": "Related-SObject-List",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
-  "sourceApiVersion": "52.0"
+  "sourceApiVersion": "65.0",
+  "packageAliases": {
+    "Related-SObject-List": "0HoJ5000000TN1yKAG",
+    "Related-SObject-List@1.0.0-1": "04tJ5000000HGm3IAG"
+  }
 }

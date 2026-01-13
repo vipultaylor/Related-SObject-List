@@ -119,4 +119,25 @@
         <shortDescription>SOBject Select Recordtype</shortDescription>
         <value>Select a record type</value>
     </labels>
+    <labels>
+        <fullName>Empty_State_Title</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Empty State Title</shortDescription>
+        <value>No {0} Records</value>
+    </labels>
+    <labels>
+        <fullName>Empty_State_Message</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Empty State Message</shortDescription>
+        <value>There are no {0} records to display. Get started by creating a new record.</value>
+    </labels>
+    <labels>
+        <fullName>Empty_State_Button</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Empty State Button</shortDescription>
+        <value>New {0}</value>
+    </labels>
 </CustomLabels>
