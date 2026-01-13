@@ -18,6 +18,10 @@ import Button_Close from "@salesforce/label/c.Button_Close";
 
 import SOBject_Select_Recordtype from "@salesforce/label/c.SOBject_Select_Recordtype";
 
+import Empty_State_Title from "@salesforce/label/c.Empty_State_Title";
+import Empty_State_Message from "@salesforce/label/c.Empty_State_Message";
+import Empty_State_Button from "@salesforce/label/c.Empty_State_Button";
+
 import getResponse from "@salesforce/apex/SObjectListController.getResponse";
 
 export default class SobjectList extends NavigationMixin(LightningElement) {
@@ -56,6 +60,8 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
 	@track isRefreshing = false;
 	@track hasRecords = false;
 	@track hasRendered = false;
+	@track configurationError = null;
+	@track apexError = null;
 
 	//Boolean tracked variable to indicate if modal is open or not default value is false as modal is closed when page is loaded
 	@track isModalOpen = false;
@@ -82,8 +88,94 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
 		Button_Next,
 		Button_View_All,
 		Button_Close,
-		SOBject_Select_Recordtype
+		SOBject_Select_Recordtype,
+		Empty_State_Title,
+		Empty_State_Message,
+		Empty_State_Button
 	};
+
+	// Skeleton rows for loading state - generates array based on limitCount
+	get skeletonRows() {
+		const count = Math.min(this.limitCount || 3, 6);
+		return [...Array(count).keys()];
+	}
+
+	// Show skeleton when initially loading (not yet loaded and not refreshing existing data)
+	get showLoadingSkeleton() {
+		return !this.isLoaded && !this.isRefreshing;
+	}
+
+	// Empty state getters
+	get emptyStateIcon() {
+		// Use a desert/empty icon, fallback to the component's configured icon
+		return "utility:all";
+	}
+
+	get emptyStateTitle() {
+		// Format: "No {SObject Label} Found" or use custom label
+		if (this.responseWrapper?.sObj?.label) {
+			return this._formatLabel(this.LABEL.Empty_State_Title, this.responseWrapper.sObj.label);
+		}
+		return "No Records Found";
+	}
+
+	get emptyStateMessage() {
+		// Format: "There are no {sobject label} records to display. Create one to get started."
+		if (this.responseWrapper?.sObj?.label) {
+			return this._formatLabel(this.LABEL.Empty_State_Message, this.responseWrapper.sObj.label.toLowerCase());
+		}
+		return "There are no records to display.";
+	}
+
+	get emptyStateButtonLabel() {
+		// Format: "New {SObject Label}"
+		if (this.responseWrapper?.sObj?.label) {
+			return this._formatLabel(this.LABEL.Empty_State_Button, this.responseWrapper.sObj.label);
+		}
+		return "New";
+	}
+
+	// Configuration error check
+	get hasConfigurationError() {
+		return this.configurationError !== null;
+	}
+
+	// Apex error check
+	get hasApexError() {
+		return this.apexError !== null;
+	}
+
+	// Consolidated visibility getters for refactored template
+	get showComponent() {
+		// Show component when: loading, has error, or loaded with displayComponent true
+		return this.showLoadingSkeleton ||
+			   this.hasConfigurationError ||
+			   this.hasApexError ||
+			   (this.isLoaded && this.responseWrapper?.displayComponent);
+	}
+
+	get isDataLoaded() {
+		// Data is successfully loaded (no errors, component should display)
+		return this.isLoaded &&
+			   !this.hasConfigurationError &&
+			   !this.hasApexError &&
+			   this.responseWrapper?.displayComponent;
+	}
+
+	get showBreadcrumbs() {
+		return this.viewAll && this.isDataLoaded && this.responseWrapper?.parentSObj;
+	}
+
+	get showTitleWithCount() {
+		return this.isDataLoaded && this.responseWrapper?.sObj?.displayCount !== undefined;
+	}
+
+	get showFooter() {
+		return this.isDataLoaded &&
+			   !this.isRefreshing &&
+			   this.hasRecords &&
+			   !this.viewAll;
+	}
 
 	connectedCallback() {
 		if (!this.hasRendered) {
@@ -462,6 +554,10 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
 		//to ensure that the display is refreshed when the refresh method is called
 		this._resetResponsWrapper();
 
+		// Clear any previous errors
+		this.apexError = null;
+		this.configurationError = null;
+
 		//Check if the component is ready to make a call to Apex
 		if ( this.recordId && this.sObjectName && this.commaSeparatedRecordtypes && this.fieldSetForColumns && this.idField && this.relationshipFieldNames) {
 			getResponse({
@@ -502,7 +598,29 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
 				this.isLoaded = true;
 				this.isRefreshing = false;
 			});
+		} else {
+			// Configuration is incomplete - set loaded to true to show configuration error state
+			this.configurationError = this._getConfigurationError();
+			this.isLoaded = true;
+			this.isRefreshing = false;
 		}
+	}
+
+	_getConfigurationError() {
+		const missingFields = [];
+		if (!this.sObjectName) missingFields.push('SObject Name');
+		if (!this.commaSeparatedRecordtypes) missingFields.push('Record Types');
+		if (!this.fieldSetForColumns) missingFields.push('Field Set');
+		if (!this.relationshipFieldNames) missingFields.push('Relationship Field Names');
+		if (!this.idField) missingFields.push('Parent Identifier Field');
+
+		if (missingFields.length > 0) {
+			return `Missing required configuration: ${missingFields.join(', ')}`;
+		}
+		if (!this.recordId) {
+			return 'This component must be placed on a record page';
+		}
+		return null;
 	}
 
 	_setRecordCounts(recordCount) {
@@ -622,10 +740,17 @@ export default class SobjectList extends NavigationMixin(LightningElement) {
 		let message = "Unknown error";
 		if (Array.isArray(error.body)) {
 			message = error.body.map((e) => e.message).join(", ");
-		} else if (typeof error.body.message === "string") {
+		} else if (error.body && typeof error.body.message === "string") {
 			message = error.body.message;
+		} else if (error.message) {
+			message = error.message;
+		} else if (typeof error === "string") {
+			message = error;
 		}
-		
+
+		// Set error state for UI display
+		this.apexError = message;
+
 		this.dispatchEvent(
 			new ShowToastEvent({
 				message: message,
