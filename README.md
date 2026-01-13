@@ -27,19 +27,48 @@ The Related SObject List component extends beyond the limitations of standard Sa
 
 ## Installation
 
-You can install this unmanaged package directly into your Salesforce org. Always test in a sandbox before deploying to production.
+There are two installation options available:
 
-### Production / Developer Edition
+| Installation Option | Description |
+| ------------------- | ----------- |
+| [Unlocked Package](#option-1-unlocked-package) | Recommended for most users. Install via URL or CLI with easy upgrades. |
+| [Unmanaged Source](#option-2-unmanaged-source-from-github) | Deploy directly from GitHub. Best for customization or development. |
+
+### Option 1: Unlocked Package
+
+The unlocked package is the recommended installation method for most users. It allows for easy installation and upgrades.
+
+#### Package Version 1.0.0
+
+<a href="https://login.salesforce.com/packaging/installPackage.apexp?p0=04tJ5000000HGm3IAG">
+  <img alt="Install in Production" src="https://img.shields.io/badge/Install%20in-Production-0d6efd?style=for-the-badge">
+</a>
+
+<a href="https://test.salesforce.com/packaging/installPackage.apexp?p0=04tJ5000000HGm3IAG">
+  <img alt="Install in Sandbox" src="https://img.shields.io/badge/Install%20in-Sandbox-198754?style=for-the-badge">
+</a>
+
+#### CLI Installation
+
+```bash
+sf package install --package 04tJ5000000HGm3IAG --target-org <your-org-alias> --wait 10
+```
+
+---
+
+### Option 2: Unmanaged Source from GitHub
+
+Deploy the source code directly from GitHub. This option is useful if you need to customize the component or contribute to development.
 
 <a href="https://githubsfdeploy.herokuapp.com/app/githubdeploy/vipultaylor/related-sobject-list">
-  <img alt="Deploy to Salesforce" src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/deploy.png">
+  <img alt="Deploy to Production" src="https://img.shields.io/badge/Deploy%20to-Production-0d6efd?style=for-the-badge">
 </a>
-
-### Sandbox
 
 <a href="https://githubsfdeploy-sandbox.herokuapp.com/app/githubdeploy/vipultaylor/related-sobject-list">
-  <img alt="Deploy to Salesforce" src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/deploy.png">
+  <img alt="Deploy to Sandbox" src="https://img.shields.io/badge/Deploy%20to-Sandbox-198754?style=for-the-badge">
 </a>
+
+> **Note:** Always test in a sandbox before deploying to production.
 
 ## Configuration
 
