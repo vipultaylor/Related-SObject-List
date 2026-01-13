@@ -21,7 +21,7 @@ export default class SobjectCompactLayoutOnHover extends LightningElement {
     wiredRecord({ error, data }) {
         if (error) {
             this._handleError(error);
-        } else if (data) {
+        } else if (data && this.recordId) {
             //Set the Object Api Name
             this.objectApiName = data.records[this.recordId].apiName;
 
@@ -36,9 +36,12 @@ export default class SobjectCompactLayoutOnHover extends LightningElement {
             //Get Field Info
             let fieldsAsLayoutRows = layoutInfo.Compact.View.sections[0].layoutRows;
 
+            // Reset summaryFields to prevent duplicates on re-render
+            this.summaryFields = [];
+
             fieldsAsLayoutRows.forEach((element, index) => {
                 let fieldApiName = element.layoutItems[0].layoutComponents[0].apiName;
-                
+
                 //Set Field Describe by copying the data
                 let fieldDescribe = JSON.parse(JSON.stringify(data.objectInfos[this.objectApiName].fields[fieldApiName]));
                 fieldDescribe.type = fieldDescribe.dataType;
@@ -85,11 +88,6 @@ export default class SobjectCompactLayoutOnHover extends LightningElement {
         if(titleIconElement){
             titleIconElement.style["background-color"] = '#' + this.primaryObjectInfo.themeInfo.color;
         }
-
-        let closeIconElement = this.template.querySelector(".slds-popover__close");
-        if(closeIconElement){
-            closeIconElement.focus();
-        }
     }
 
     keepPopoverActive(){
@@ -104,9 +102,6 @@ export default class SobjectCompactLayoutOnHover extends LightningElement {
         // eslint-disable-next-line @lwc/lwc/no-async-operation
         this.delayTimeout = setTimeout(() => {
             this.isPopoverActive = false;
-            this.isLoaded = false;
-            // eslint-disable-next-line @lwc/lwc/no-api-reassignments
-            this.recordId = null;
             this._dispatchEvent('popoverstatechange');
         }, 150);
     }

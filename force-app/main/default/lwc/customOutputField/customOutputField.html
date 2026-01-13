@@ -44,7 +44,7 @@
         <template lwc:elseif={field.properties.isName}>
             <div class="forceOutputLookupWithPreview">
                 <template lwc:if={field.properties.isHoverable}>
-                    <a id="nameFieldLink" class="slds-truncate textUnderline" title={field.value} data-recordid={field.recordId} tabindex="0" onclick={navigateToRecordViewPage} onfocus={showPopover} onblur={hidePopover} onmouseover={showPopover} onmouseout={hidePopover} target="_self" aria-haspopup="false">
+                    <a id="nameFieldLink" class="slds-truncate textUnderline" data-recordid={field.recordId} tabindex="0" onclick={navigateToRecordViewPage} onmouseenter={showPopover} onmouseleave={hidePopover} target="_self" aria-haspopup="true">
                         {field.value}
                     </a>
                 </template>
@@ -77,7 +77,7 @@
             <template lwc:if={field.properties.isNavigatable}>
                 <div class="forceOutputLookupWithPreview">
                     <template lwc:if={field.properties.isHoverable}>
-                        <a class="slds-truncate textUnderline" title={field.value} data-recordid={field.recordId} tabindex="0" onclick={navigateToRecordViewPage} onfocus={showPopover} onblur={hidePopover} onmouseover={showPopover} onmouseout={hidePopover} target="_self" aria-haspopup="false">
+                        <a class="slds-truncate textUnderline" data-recordid={field.recordId} tabindex="0" onclick={navigateToRecordViewPage} onmouseenter={showPopover} onmouseleave={hidePopover} target="_self" aria-haspopup="true">
                             {field.value}
                         </a>
                     </template>
@@ -98,7 +98,7 @@
             <template lwc:if={field.properties.isNavigatable}>
                 <div class="forceOutputLookupWithPreview">
                     <template lwc:if={field.properties.isHoverable}>
-                        <a class="slds-truncate textUnderline" title={field.value} data-recordid={field.recordId} tabindex="0" onclick={navigateToRecordViewPage} onfocus={showPopover} onblur={hidePopover} onmouseover={showPopover} onmouseout={hidePopover} target="_self" aria-haspopup="false">
+                        <a class="slds-truncate textUnderline" data-recordid={field.recordId} tabindex="0" onclick={navigateToRecordViewPage} onmouseenter={showPopover} onmouseleave={hidePopover} target="_self" aria-haspopup="true">
                             {field.value}
                         </a>
                     </template>
